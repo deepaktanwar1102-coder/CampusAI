@@ -1,0 +1,2249 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>CampusAI</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<style>:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{background:#f8fafc;font-family:Inter,system-ui,sans-serif;color:#0f172a}</style><style id="fx-style">:root{--v:#8b5cf6;--i:#6366f1;--b:#38bdf8;--ink:#eef0ff;--mut:#a4abd4;--edge:rgba(160,150,255,.2)}
+body.fx{background:#06051a;color:var(--ink);overflow-x:hidden}
+#fx-bg{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(900px 600px at 15% 10%,rgba(124,58,237,.28),transparent 60%),radial-gradient(800px 600px at 90% 20%,rgba(56,189,248,.16),transparent 60%),radial-gradient(900px 700px at 50% 100%,rgba(79,70,229,.22),transparent 60%),#06051a}
+#fx-bg:before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(140,130,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(140,130,255,.06) 1px,transparent 1px);background-size:56px 56px;-webkit-mask-image:radial-gradient(ellipse at 50% 30%,#000,transparent 75%);mask-image:radial-gradient(ellipse at 50% 30%,#000,transparent 75%)}
+.fx-blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.35;animation:fx-drift 22s ease-in-out infinite alternate}
+.fx-blob.a{width:420px;height:420px;background:#7c3aed;top:-80px;left:-60px}
+.fx-blob.b{width:360px;height:360px;background:#0ea5e9;bottom:-80px;right:-40px;animation-delay:-9s}
+@keyframes fx-drift{to{transform:translate3d(90px,60px,0) scale(1.15)}}
+#fx-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+#root{position:relative;z-index:1}
+/* palette remap (light -> dark glass) */
+body.fx .text-slate-400{color:#7f88b8}body.fx .text-slate-500{color:var(--mut)}body.fx .text-slate-600{color:#c3c9ea}
+body.fx .text-indigo-600{color:#a5b4fc}body.fx .text-indigo-700{color:#c7d2fe}
+body.fx .\!text-indigo-700{color:#fff!important}
+body.fx .text-red-600,body.fx .text-red-700{color:#fca5a5}body.fx .text-green-600,body.fx .text-green-700{color:#86efac}
+body.fx .text-amber-700{color:#fcd34d}body.fx .text-blue-700{color:#7dd3fc}
+body.fx .bg-white{background:rgba(24,22,58,.6)}body.fx .bg-slate-50{background:rgba(255,255,255,.04)}
+body.fx .bg-slate-100{background:rgba(255,255,255,.07)}body.fx .bg-slate-200{background:rgba(255,255,255,.1)}
+body.fx .bg-slate-300{background:rgba(255,255,255,.18)}
+body.fx .bg-indigo-50{background:rgba(99,102,241,.16)}body.fx .bg-indigo-100{background:rgba(99,102,241,.22)}
+body.fx .bg-violet-50{background:rgba(139,92,246,.16)}body.fx .bg-green-50{background:rgba(34,197,94,.14)}
+body.fx .bg-green-100{background:rgba(34,197,94,.2)}body.fx .bg-amber-50{background:rgba(245,158,11,.14)}
+body.fx .bg-amber-100{background:rgba(245,158,11,.2)}body.fx .bg-red-50{background:rgba(239,68,68,.14)}
+body.fx .bg-red-100{background:rgba(239,68,68,.2)}body.fx .bg-blue-50{background:rgba(56,189,248,.14)}
+body.fx .bg-blue-100{background:rgba(56,189,248,.2)}body.fx .bg-pink-50{background:rgba(236,72,153,.14)}
+body.fx .bg-yellow-50{background:rgba(234,179,8,.14)}body.fx .bg-sky-50{background:rgba(14,165,233,.14)}
+body.fx .border-slate-100,body.fx .border-slate-200,body.fx .border-slate-300{border-color:var(--edge)}
+body.fx .border-indigo-200{border-color:rgba(129,140,248,.35)}
+body.fx .hover\:bg-slate-50:hover,body.fx .hover\:bg-slate-100:hover{background:rgba(129,140,248,.14)}
+body.fx .hover\:bg-indigo-50:hover{background:rgba(99,102,241,.25)}
+body.fx section.bg-gradient-to-b,body.fx .min-h-screen.bg-gradient-to-br{background-image:none}
+body.fx .bg-slate-900\/50,body.fx .bg-slate-900\/40{background:rgba(4,3,20,.6)}
+/* glass cards */
+body.fx .fx-card{position:relative;background:linear-gradient(145deg,rgba(255,255,255,.1),rgba(255,255,255,.03)) ,rgba(20,18,50,.55);border:1px solid var(--edge);box-shadow:0 10px 30px -12px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.08);-webkit-backdrop-filter:blur(14px) saturate(140%);backdrop-filter:blur(14px) saturate(140%);transition:transform .2s ease-out,box-shadow .3s,border-color .3s;animation:fx-rise .5s cubic-bezier(.2,.7,.2,1) backwards}
+body.fx .fx-card.bg-gradient-to-br{background-image:linear-gradient(135deg,#4f46e5,#7c3aed);border:0;box-shadow:0 18px 50px -14px rgba(124,58,237,.7)}
+body.fx .fx-card:before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(340px circle at var(--mx,50%) var(--my,0%),rgba(255,255,255,.13),transparent 45%);opacity:0;transition:opacity .3s}
+body.fx .fx-card:hover{border-color:rgba(165,180,252,.4);box-shadow:0 24px 50px -16px rgba(99,102,241,.55),inset 0 1px 0 rgba(255,255,255,.12)}
+body.fx .fx-card:hover:before{opacity:1}
+body.fx .fx-card.tilting{transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(-4px);will-change:transform}
+@keyframes fx-rise{from{opacity:0;translate:0 14px}}
+body.fx main>div{animation:fx-fade .4s ease backwards}@keyframes fx-fade{from{opacity:0}}
+body.fx main .grid>.fx-card:nth-child(2){animation-delay:.05s}body.fx main .grid>.fx-card:nth-child(3){animation-delay:.1s}body.fx main .grid>.fx-card:nth-child(4){animation-delay:.15s}body.fx main .grid>.fx-card:nth-child(n+5){animation-delay:.2s}
+/* buttons */
+body.fx button{transition:transform .15s,box-shadow .25s,background .25s,border-color .25s}
+body.fx button:active:not(:disabled){transform:scale(.97)}
+body.fx .bg-indigo-600{background-image:linear-gradient(135deg,#6366f1,#8b5cf6)}
+body.fx button.bg-indigo-600:hover{box-shadow:0 0 0 1px rgba(196,181,253,.4),0 8px 28px -6px rgba(139,92,246,.8);transform:translateY(-1px)}
+body.fx button.bg-white{background:rgba(255,255,255,.07);border-color:var(--edge);color:var(--ink);backdrop-filter:blur(8px)}
+body.fx button.bg-white:hover{background:rgba(255,255,255,.14);border-color:rgba(165,180,252,.5)}
+body.fx button.bg-red-50{border:1px solid rgba(248,113,113,.3)}
+/* forms */
+body.fx input,body.fx select,body.fx textarea{background:rgba(8,7,30,.55);color:var(--ink);border-color:var(--edge);transition:box-shadow .25s,border-color .25s,background .25s}
+body.fx input::placeholder,body.fx textarea::placeholder{color:#6f78a8}
+body.fx input:focus,body.fx select:focus,body.fx textarea:focus{border-color:#818cf8;box-shadow:0 0 0 3px rgba(99,102,241,.3),0 0 22px rgba(56,189,248,.18);background:rgba(12,10,40,.75)}
+body.fx option{background:#12102a;color:var(--ink)}body.fx input:disabled{opacity:.6}
+/* tables */
+body.fx table thead{background:rgba(129,140,248,.1);text-transform:uppercase;font-size:.7rem;letter-spacing:.06em}
+body.fx table tbody tr{transition:background .2s,box-shadow .2s}
+body.fx table tbody tr:hover{background:linear-gradient(90deg,rgba(99,102,241,.16),rgba(56,189,248,.06));box-shadow:inset 3px 0 0 #818cf8}
+/* nav */
+body.fx aside.fx-side{background:linear-gradient(180deg,rgba(28,24,72,.75),rgba(10,8,34,.8));border-color:var(--edge);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);box-shadow:8px 0 40px -16px rgba(0,0,0,.7)}
+body.fx aside a{position:relative;transition:background .25s,color .25s,transform .2s}
+body.fx aside a:hover{transform:translateX(3px)}
+body.fx aside a.bg-indigo-50{background:linear-gradient(90deg,rgba(99,102,241,.32),rgba(56,189,248,.08));color:#fff;box-shadow:0 0 24px -6px rgba(99,102,241,.6)}
+body.fx aside a.bg-indigo-50:before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:3px;border-radius:3px;background:linear-gradient(#a78bfa,#38bdf8);box-shadow:0 0 10px #818cf8;animation:fx-bar .35s ease backwards}
+@keyframes fx-bar{from{transform:scaleY(0)}}
+body.fx header.sticky{background:rgba(9,8,32,.6);border-color:var(--edge);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+body.fx header .bg-indigo-600{box-shadow:0 0 16px rgba(139,92,246,.7)}
+body.fx a>span.bg-gradient-to-br{box-shadow:0 0 18px rgba(139,92,246,.7)}
+/* modal */
+body.fx .fx-modal-bg{-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);animation:fx-fade .2s ease}
+body.fx .fx-modal{background:linear-gradient(145deg,rgba(38,32,88,.92),rgba(14,12,44,.94));border:1px solid var(--edge);box-shadow:0 40px 90px -20px rgba(0,0,0,.8),0 0 60px -20px rgba(99,102,241,.6);animation:fx-pop .28s cubic-bezier(.2,.8,.2,1)}
+body.fx .fx-out .fx-modal{animation:fx-popout .18s ease forwards}body.fx .fx-out.fx-modal-bg{animation:fx-fadeout .18s ease forwards}
+@keyframes fx-pop{from{opacity:0;transform:translateY(18px) scale(.96)}}
+@keyframes fx-popout{to{opacity:0;transform:translateY(10px) scale(.97)}}@keyframes fx-fadeout{to{opacity:0}}
+/* charts / progress */
+body.fx .fx-bar{transform-origin:left;animation:fx-grow .9s cubic-bezier(.2,.7,.2,1) backwards;box-shadow:0 0 12px rgba(129,140,248,.55)}
+@keyframes fx-grow{from{transform:scaleX(0)}}
+body.fx .h-4.bg-slate-100 .bg-green-500{box-shadow:0 0 12px rgba(74,222,128,.6)}
+/* stat / hero */
+body.fx .fx-stat>div:first-child{box-shadow:inset 0 0 0 1px rgba(255,255,255,.1),0 0 22px -4px rgba(99,102,241,.55)}
+body.fx .fx-stat .text-2xl{background:linear-gradient(90deg,#fff,#c4b5fd);-webkit-background-clip:text;background-clip:text;color:transparent}
+body.fx h1 .text-indigo-600{background:linear-gradient(90deg,#a78bfa,#60a5fa,#38bdf8);-webkit-background-clip:text;background-clip:text;color:transparent}
+body.fx .fx-float{transform:perspective(1200px) rotateX(calc(5deg + var(--py,0)*-4deg)) rotateY(calc(var(--px,0)*6deg));animation:fx-rise .6s backwards,fx-bob 7s ease-in-out infinite .6s;box-shadow:0 40px 90px -30px rgba(99,102,241,.7),0 0 0 1px var(--edge)}
+@keyframes fx-bob{50%{translate:0 -10px}}
+body.fx section.rounded-3xl{box-shadow:0 30px 80px -30px rgba(124,58,237,.8);border:1px solid rgba(196,181,253,.25)}
+body.fx section .text-4xl,body.fx section .md\:text-6xl,body.fx .text-3xl{text-shadow:0 0 40px rgba(139,92,246,.25)}
+body.fx .bg-red-600{box-shadow:0 10px 30px -8px rgba(239,68,68,.6)}body.fx .bg-slate-900{background:rgba(20,18,60,.92);border:1px solid var(--edge);backdrop-filter:blur(12px)}
+body.fx ::-webkit-scrollbar{width:8px;height:8px}body.fx ::-webkit-scrollbar-thumb{background:rgba(129,140,248,.35);border-radius:8px}
+/* AI orb */
+.orb{--s:96px;position:relative;width:var(--s);height:var(--s);flex:none;pointer-events:none;transform-style:preserve-3d;display:inline-block}
+.orb-core{position:absolute;inset:22%;border-radius:50%;background:radial-gradient(circle at 32% 28%,#fff 0,#c4b5fd 14%,#7c3aed 45%,#312e81 78%,#0b0a30);box-shadow:0 0 calc(var(--s)*.35) rgba(139,92,246,.85),0 0 calc(var(--s)*.7) rgba(56,189,248,.35),inset 0 0 calc(var(--s)*.15) rgba(56,189,248,.6);animation:orb-pulse 3.2s ease-in-out infinite}
+.orb-ring{position:absolute;inset:4%;border-radius:50%;border:1px solid rgba(165,180,252,.55);box-shadow:0 0 10px rgba(99,102,241,.45)}
+.orb-ring.r1{animation:orb-a 9s linear infinite}.orb-ring.r2{inset:12%;border-color:rgba(56,189,248,.55);animation:orb-b 7s linear infinite}.orb-ring.r3{inset:-6%;border-style:dashed;border-color:rgba(167,139,250,.35);animation:orb-c 14s linear infinite}
+.orb-spark{position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px;border-radius:50%;background:#a5f3fc;box-shadow:0 0 8px #38bdf8}
+.orb-spark.s1{animation:orb-s 5s linear infinite}.orb-spark.s2{animation:orb-s 7s linear infinite reverse;background:#c4b5fd;box-shadow:0 0 8px #8b5cf6}.orb-spark.s3{animation:orb-s 9s linear infinite -3s}
+.orb-busy .orb-core{animation-duration:.9s}.orb-busy .orb-ring.r1{animation-duration:2.5s}.orb-busy .orb-ring.r2{animation-duration:2s}
+@keyframes orb-pulse{50%{transform:scale(1.08);filter:brightness(1.25)}}
+@keyframes orb-a{from{transform:rotateX(70deg) rotateZ(0)}to{transform:rotateX(70deg) rotateZ(360deg)}}
+@keyframes orb-b{from{transform:rotateY(70deg) rotateZ(0)}to{transform:rotateY(70deg) rotateZ(-360deg)}}
+@keyframes orb-c{from{transform:rotateX(60deg) rotateY(25deg) rotateZ(0)}to{transform:rotateX(60deg) rotateY(25deg) rotateZ(360deg)}}
+@keyframes orb-s{from{transform:rotate(0) translateX(calc(var(--s)*.5))}to{transform:rotate(360deg) translateX(calc(var(--s)*.5))}}
+/* chat */
+body.fx .max-w-\[85\%\]{animation:fx-msg .35s cubic-bezier(.2,.8,.2,1) backwards}
+@keyframes fx-msg{from{opacity:0;transform:translateY(10px) scale(.97)}}
+body.fx .max-w-\[85\%\].bg-indigo-600{box-shadow:0 8px 24px -8px rgba(99,102,241,.7);border-bottom-right-radius:6px}
+body.fx .max-w-\[85\%\].bg-slate-100{border:1px solid var(--edge);border-bottom-left-radius:6px}
+/* lite / fallback / a11y */
+body.fx.fx-lite .fx-card,body.fx.fx-lite aside.fx-side,body.fx.fx-lite header.sticky{-webkit-backdrop-filter:none;backdrop-filter:none}
+body.fx.fx-lite .fx-card{background:rgba(24,22,58,.82)}body.fx.fx-lite .fx-blob{animation:none;filter:blur(50px)}
+body.fx.fx-lite .fx-float{transform:none}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){body.fx .fx-card{background:rgba(24,22,58,.9)}}
+@media (max-width:768px){body.fx .fx-card{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(24,22,58,.8)}body.fx .fx-float{transform:none}}
+@media (prefers-reduced-motion:reduce){body.fx *,body.fx *:before,body.fx *:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}body.fx .fx-float,body.fx .fx-card.tilting{transform:none}}
+</style></head>
+<body class="fx"><div id="root"></div>
+<script type="text/babel">
+    const SUPABASE_URL = "https://hjjebwoehzrwdaiqjsrw.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_IFxu1YDGWVAh_ZGwUbRdQw_qXf5GNRO";
+
+const supabase = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
+const {useState,useEffect,useContext,createContext}=React;
+const Ctx=createContext();const nav=p=>location.hash='#'+p;
+const fmt=d=>new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+const TODAY='2026-09-23';
+const DEPTS=['Computer Science','Artificial Intelligence & Machine Learning','Information Technology','Electronics','Management'];
+const D={
+notices:[
+{id:1,title:'End Semester Examination Schedule',cat:'Examination',date:'2026-09-20',author:'Exam Cell',status:'Active',desc:'Final exam dates released for all departments.',body:'The End Semester Examinations begin on 12 November 2026. Admit cards will be available from 1 November. Students must clear all dues before then.'},
+{id:2,title:'Campus Placement Drive: TechNova',cat:'Placement',date:'2026-09-18',author:'Placement Cell',status:'Active',desc:'TechNova is hiring final-year students.',body:'TechNova will conduct an on-campus drive on 5 October. Eligibility: 7.0 CGPA, no active backlogs. Register with the placement cell by 30 September.'},
+{id:3,title:'Mid-Term Assignment Submission',cat:'Academic',date:'2026-09-15',author:'Dr. Mehta',status:'Active',desc:'Submit assignments before 28 September.',body:'All mid-term assignments must be uploaded to the LMS by 28 September, 5 PM. Late submissions lose 10% per day.'},
+{id:4,title:'Annual Tech Fest Volunteers',cat:'Events',date:'2026-09-10',author:'Student Council',status:'Active',desc:'Volunteers wanted for Innovate 2026.',body:'Innovate 2026 needs volunteers for logistics, hospitality and design. Sign up at the student council office.'},
+{id:5,title:'Library Timings Update',cat:'General',date:'2026-08-28',author:'Librarian',status:'Draft',desc:'Library will remain open until 10 PM.',body:'From 1 October the central library will be open 8 AM to 10 PM on weekdays during exam season.'}],
+events:[
+{id:1,title:'Innovate 2026 Tech Fest',date:'2026-10-03',time:'10:00',loc:'Main Auditorium',org:'Student Council',desc:'Hackathons, robotics and project exhibitions.'},
+{id:2,title:'AI Workshop with Industry Experts',date:'2026-09-27',time:'14:00',loc:'Seminar Hall B',org:'AI/ML Dept',desc:'Hands-on session on LLM applications.'},
+{id:3,title:'Cultural Night',date:'2026-10-10',time:'18:00',loc:'Open Air Theatre',org:'Cultural Club',desc:'Music, dance and drama performances.'},
+{id:4,title:'Freshers Welcome 2026',date:'2026-08-20',time:'11:00',loc:'Main Auditorium',org:'Student Council',desc:'Welcome event for the new batch.'}],
+tt:{Monday:['Machine Learning|Dr. Mehta|A-101|09:00|10:00','Operating Systems|Prof. Rao|B-204|11:00|12:00','Software Engineering|Dr. Iyer|A-102|14:00|15:00'],
+Tuesday:['Database Management Systems|Prof. Nair|Lab 3|09:00|11:00','Computer Networks|Dr. Khan|B-201|12:00|13:00'],
+Wednesday:['Machine Learning|Dr. Mehta|A-101|09:00|10:00','Database Management Systems|Prof. Nair|A-103|11:00|12:00','Software Engineering|Dr. Iyer|A-102|14:00|15:00'],
+Thursday:['Machine Learning|Dr. Mehta|A-101|09:00|10:00','Database Management Systems|Prof. Nair|A-103|11:00|12:00','Software Engineering|Dr. Iyer|A-102|14:00|15:00'],
+Friday:['Computer Networks|Dr. Khan|B-201|10:00|11:00','ML Lab|Dr. Mehta|Lab 1|13:00|16:00'],
+Saturday:['Seminar & Mentoring|Prof. Rao|C-105|10:00|12:00']},
+complaints:[
+{id:1024,title:'Wi-Fi not working in Hostel B',cat:'Hostel',date:'2026-09-18',status:'In Progress',student:'Alex Sharma',desc:'Wi-Fi has been down on the 2nd floor for three days.',resp:'Network team has been assigned. Router replacement scheduled.'},
+{id:1023,title:'Projector broken in A-102',cat:'Infrastructure',date:'2026-09-10',status:'Resolved',student:'Alex Sharma',desc:'Projector shows no display.',resp:'Projector replaced on 12 Sept.'},
+{id:1022,title:'Wrong marks in DBMS internal',cat:'Academic',date:'2026-09-08',status:'Pending',student:'Rahul Verma',desc:'Internal marks entered incorrectly.',resp:''},
+{id:1021,title:'Canteen hygiene issue',cat:'Canteen',date:'2026-09-02',status:'Rejected',student:'Priya Singh',desc:'Found unclean utensils.',resp:'Inspection found no violations.'},
+{id:1020,title:'Library AC not working',cat:'Infrastructure',date:'2026-08-25',status:'Resolved',student:'Aman Kumar',desc:'AC off in reading hall.',resp:'Repaired.'}],
+faqs:[
+{id:1,q:'How do I get my ID card reissued?',a:'Apply at the admin office with a ₹200 fee and a photo.',cat:'Administration',dept:'All'},
+{id:2,q:'What is the minimum attendance required?',a:'75% attendance is required to sit for exams.',cat:'Academic',dept:'All'},
+{id:3,q:'How to apply for a lab pass?',a:'Ask your lab in-charge through the department office.',cat:'Labs',dept:'Electronics'}],
+students:[
+{id:1,name:'Alex Sharma',sid:'CS2023045',dept:'Computer Science',sem:'5',email:'alex.sharma@campusai.edu',status:'Active'},
+{id:2,name:'Rahul Verma',sid:'AI2023012',dept:'Artificial Intelligence & Machine Learning',sem:'5',email:'rahul.verma@campusai.edu',status:'Active'},
+{id:3,name:'Priya Singh',sid:'IT2022031',dept:'Information Technology',sem:'7',email:'priya.singh@campusai.edu',status:'Active'},
+{id:4,name:'Aman Kumar',sid:'EC2024008',dept:'Electronics',sem:'3',email:'aman.kumar@campusai.edu',status:'Inactive'}]};
+const CATS=['Academic','Examination','Events','General','Placement'];
+const stC={Pending:'bg-amber-100 text-amber-700','In Progress':'bg-blue-100 text-blue-700',Resolved:'bg-green-100 text-green-700',Rejected:'bg-red-100 text-red-700',Active:'bg-green-100 text-green-700',Draft:'bg-slate-200 text-slate-600',Inactive:'bg-slate-200 text-slate-600'};
+const Badge=({s})=><span className={'px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap '+(stC[s]||'bg-indigo-100 text-indigo-700')}>{s}</span>;
+const Card=({c='',...p})=><div className={'fx-card bg-white rounded-2xl border border-slate-200 shadow-sm '+c} {...p}/>;
+const Btn=({v='p',c='',...p})=><button className={'px-4 py-2 rounded-xl text-sm font-semibold transition '+({p:'bg-indigo-600 text-white hover:bg-indigo-700',s:'bg-white border border-slate-300 hover:bg-slate-50',d:'bg-red-50 text-red-600 hover:bg-red-100'}[v])+' '+c} {...p}/>;
+const inp='w-full border border-slate-300 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-slate-50';
+const Field=({l,t='text',opts,err,...p})=><label className="block text-sm font-medium mb-3">{l}{t==='textarea'?<textarea rows={4} className={inp+' mt-1'} {...p}/>:t==='select'?<select className={inp+' mt-1'} {...p}>{opts.map(o=><option key={o}>{o}</option>)}</select>:<input type={t} className={inp+' mt-1'} {...p}/>}{err&&<span className="text-red-600 text-xs">{err}</span>}</label>;
+const Modal=({title,onClose,children})=>{const [out,setOut]=useState(false);const close=()=>{if(out)return;setOut(true);setTimeout(onClose,170)};return <div className={'fx-modal-bg fixed inset-0 z-50 bg-slate-900/50 flex items-center justify-center p-4'+(out?' fx-out':'')} onClick={close}><div className="fx-modal bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-auto p-6" onClick={e=>e.stopPropagation()}><div className="flex justify-between mb-4"><h3 className="font-bold text-lg">{title}</h3><button onClick={close}>✕</button></div>{children}</div></div>};
+const Empty=({t='Nothing found'})=><div className="text-center py-12 text-slate-500"><div className="text-4xl mb-2">🗂️</div>{t}</div>;
+const Head=({t,s,children})=><div className="flex flex-wrap items-center justify-between gap-3 mb-5"><div><h1 className="text-2xl font-bold">{t}</h1>{s&&<p className="text-slate-500 text-sm">{s}</p>}</div>{children}</div>;
+const Num=({v})=>{const m=(typeof v==='string'||typeof v==='number')?String(v).match(/^(\d+)(.*)$/):null;const [n,setN]=useState(m?0:null);
+ useEffect(()=>{if(!m)return;const to=+m[1];if(matchMedia('(prefers-reduced-motion: reduce)').matches||to>100000){setN(to);return}let raf,t0;const step=t=>{t0=t0||t;const p=Math.min((t-t0)/800,1);setN(Math.round(to*(1-Math.pow(1-p,3))));if(p<1)raf=requestAnimationFrame(step)};raf=requestAnimationFrame(step);return()=>cancelAnimationFrame(raf)},[m&&m[1]]);
+ return m?<>{n===null?m[1]:n}{m[2]}</>:v};
+const Stat=({i,l,v,c='bg-indigo-50'})=><Card c="fx-stat p-4 flex items-center gap-3"><div className={'w-11 h-11 rounded-xl flex items-center justify-center text-xl '+c}>{i}</div><div><div className="text-2xl font-bold"><Num v={v}/></div><div className="text-xs text-slate-500">{l}</div></div></Card>;
+const Tabs=({tabs,v,set})=><div className="flex gap-1 overflow-x-auto mb-4 bg-slate-100 p-1 rounded-xl w-fit max-w-full">{tabs.map(t=><button key={t} onClick={()=>set(t)} className={'px-4 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap '+(v===t?'bg-white shadow text-indigo-700':'text-slate-600')}>{t}</button>)}</div>;
+const Bars=({d,t})=>{const m=Math.max(...d.map(x=>x[1]),1);return <Card c="p-5"><h3 className="font-semibold mb-4">{t}</h3><div className="space-y-3">{d.map(([l,v,c])=><div key={l}><div className="flex justify-between text-xs mb-1"><span>{l}</span><b>{v}</b></div><div className="h-2.5 bg-slate-100 rounded-full"><div className={'fx-bar h-full rounded-full '+(c||'bg-indigo-500')} style={{width:v/m*100+'%'}}/></div></div>)}</div></Card>};
+const Timeline=({idx,rej})=><div className="space-y-4">{['Submitted','Under Review','In Progress','Resolved'].map((s,i)=><div key={s} className="flex items-center gap-3"><div className={'w-7 h-7 rounded-full flex items-center justify-center text-xs text-white '+(i<=idx?(rej&&i===idx?'bg-red-500':'bg-indigo-600'):'bg-slate-300')}>{i<=idx?'✓':i+1}</div><span className={i<=idx?'font-semibold':'text-slate-400'}>{rej&&i===idx?'Rejected':s}</span></div>)}</div>;
+const tlIdx=s=>({Submitted:0,'Under Review':1,Pending:0,'In Progress':2,Resolved:3,Rejected:1}[s]??0);
+
+function Crud({items,setItems,cols,fields,filters=[],noun,title,sub}){
+ const {toast}=useContext(Ctx);const [q,setQ]=useState(''),[f,setF]=useState({}),[m,setM]=useState(null);
+ const list=items.filter(i=>Object.values(i).join(' ').toLowerCase().includes(q.toLowerCase())&&filters.every(x=>!f[x.k]||String(i[x.k])===f[x.k]));
+ const blank=Object.fromEntries(fields.map(x=>[x.k,x.opts?x.opts[0]:'']));
+ const save=()=>{const r=fields.find(x=>!String(m[x.k]).trim()&&x.t!=='textarea');if(r)return toast('Please fill in '+r.l,'err');setItems(m.id?items.map(i=>i.id===m.id?m:i):[{status:'Active',...m,id:Date.now()},...items]);setM(null);toast(noun+' saved')};
+ return <div><Head t={title} s={sub}><Btn onClick={()=>setM(blank)}>+ Create {noun}</Btn></Head>
+ <div className="flex flex-wrap gap-2 mb-4"><input className={inp+' max-w-xs'} placeholder="Search..." value={q} onChange={e=>setQ(e.target.value)}/>{filters.map(x=><select key={x.k} className={inp+' max-w-[200px]'} value={f[x.k]||''} onChange={e=>setF({...f,[x.k]:e.target.value})}><option value="">All {x.l}</option>{x.opts.map(o=><option key={o}>{o}</option>)}</select>)}</div>
+ <Card c="overflow-x-auto">{list.length?<table className="w-full text-sm"><thead className="bg-slate-50 text-left text-slate-500"><tr>{cols.map(c=><th key={c[0]} className="p-3">{c[0]}</th>)}<th className="p-3">Actions</th></tr></thead><tbody>{list.map(i=><tr key={i.id} className="border-t border-slate-100">{cols.map(c=><td key={c[0]} className="p-3">{c[1]==='status'?<Badge s={i.status}/>:c[2]?c[2](i[c[1]]):i[c[1]]}</td>)}<td className="p-3 whitespace-nowrap"><button className="text-indigo-600 mr-3" onClick={()=>setM(i)}>Edit</button><button className="text-red-600" onClick={()=>{setItems(items.filter(x=>x.id!==i.id));toast(noun+' deleted')}}>Delete</button></td></tr>)}</tbody></table>:<Empty/>}</Card>
+ {m&&<Modal title={(m.id?'Edit ':'Create ')+noun} onClose={()=>setM(null)}>{fields.map(x=><Field key={x.k} l={x.l} t={x.t||'text'} opts={x.opts} value={m[x.k]} onChange={e=>setM({...m,[x.k]:e.target.value})}/>)}<div className="flex gap-2 justify-end"><Btn v="s" onClick={()=>setM(null)}>Cancel</Btn><Btn onClick={save}>Save</Btn></div></Modal>}</div>}
+
+const SN=[['Dashboard','/student/dashboard','🏠'],['AI Assistant','/student/assistant','✨'],['Notices','/student/notices','📢'],['Events','/student/events','🎉'],['Timetable','/student/timetable','🗓️'],['Complaints','/student/complaints','📝'],['Profile','/student/profile','👤']];
+const AN=[['Dashboard','/admin/dashboard','🏠'],['Students','/admin/students','🎓'],['Notices','/admin/notices','📢'],['Events','/admin/events','🎉'],['Complaints','/admin/complaints','📝'],['FAQs','/admin/faqs','❓'],['Analytics','/admin/analytics','📊']];
+const Orb=({size=96,busy=false})=><div className={'orb'+(busy?' orb-busy':'')} style={{'--s':size+'px'}} aria-hidden="true"><i className="orb-ring r3"/><i className="orb-ring r1"/><i className="orb-ring r2"/><i className="orb-core"/><i className="orb-spark s1"/><i className="orb-spark s2"/><i className="orb-spark s3"/></div>;
+const Logo=()=><a href="#/" className="flex items-center gap-2 font-bold text-lg"><span className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-violet-500 text-white flex items-center justify-center">✦</span>CampusAI</a>;
+
+function Shell({role,path,children}){
+ const [o,setO]=useState(false);const items=role==='admin'?AN:SN;const {me,logout}=useContext(Ctx);
+ const side=<div className="p-4 space-y-1"><div className="mb-6"><Logo/></div>{items.map(([l,p,i])=><a key={p} href={'#'+p} onClick={()=>setO(false)} className={'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium '+(path.startsWith(p)?'bg-indigo-50 text-indigo-700':'text-slate-600 hover:bg-slate-100')}><span>{i}</span>{l}</a>)}<button onClick={logout} className="flex gap-3 px-3 py-2.5 text-sm text-slate-500 w-full text-left">↩ Logout</button></div>;
+ return <div className="min-h-screen"><aside className="fx-side hidden lg:block fixed inset-y-0 left-0 w-60 bg-white border-r border-slate-200">{side}</aside>
+ {o&&<div className="lg:hidden fixed inset-0 z-40 bg-slate-900/40" onClick={()=>setO(false)}><aside className="fx-side w-64 h-full bg-white" onClick={e=>e.stopPropagation()}>{side}</aside></div>}
+ <div className="lg:ml-60"><header className="sticky top-0 z-30 bg-white/90 backdrop-blur border-b border-slate-200 px-4 h-14 flex items-center justify-between"><button className="lg:hidden text-xl" onClick={()=>setO(true)}>☰</button><span className="hidden lg:block text-sm text-slate-500">CampusAI Demo University</span><div className="flex items-center gap-3"><a href={role==='admin'?'#/student/dashboard':'#/admin/dashboard'} className="text-xs text-indigo-600 font-medium">Switch to {role==='admin'?'Student':'Admin'}</a><span>🔔</span><div className="w-8 h-8 rounded-full bg-indigo-600 text-white text-sm flex items-center justify-center">{role==='admin'?'A':me.name[0]}</div></div></header><main className="p-4 lg:p-8 max-w-6xl">{children}</main></div></div>}
+
+function Landing(){
+ const F=[['✨','AI Campus Assistant','Ask anything, get contextual answers.'],['📢','Smart Notices','Never miss an update.'],['🗓️','Timetable','Your day at a glance.'],['🎉','Campus Events','Discover and register.'],['📝','Grievance Tracking','Track every complaint.'],['🛠️','Admin Management','Manage campus data easily.']];
+ return <div><nav className="flex items-center justify-between px-5 lg:px-16 h-16"><Logo/><div className="flex gap-2"><Btn v="s" onClick={()=>nav('/login')}>Login</Btn><Btn onClick={()=>nav('/signup')}>Get Started</Btn></div></nav>
+ <section className="text-center px-5 pt-14 pb-10 bg-gradient-to-b from-indigo-50 to-transparent"><div className="flex justify-center mb-6"><Orb size={120}/></div><h1 className="text-4xl md:text-6xl font-extrabold max-w-3xl mx-auto leading-tight">Your Campus. <span className="text-indigo-600">One Intelligent Assistant.</span></h1><p className="text-slate-600 mt-5 max-w-2xl mx-auto">CampusAI brings college information, student services and AI-powered assistance together in one place.</p><div className="flex gap-3 justify-center mt-7 flex-wrap"><Btn c="!px-6 !py-3" onClick={()=>nav('/signup')}>Get Started</Btn><Btn v="s" c="!px-6 !py-3" onClick={()=>document.getElementById('f').scrollIntoView({behavior:'smooth'})}>Explore CampusAI</Btn></div>
+ <Card c="fx-float max-w-3xl mx-auto mt-12 p-4 text-left shadow-xl"><div className="grid grid-cols-4 gap-2 mb-3">{[['3','Classes'],['2','Events'],['1','Complaints'],['4','Notices']].map(([v,l])=><div key={l} className="bg-indigo-50 rounded-xl p-3"><b className="text-xl">{v}</b><div className="text-xs text-slate-500">{l}</div></div>)}</div><div className="grid md:grid-cols-2 gap-3"><div className="bg-gradient-to-br from-indigo-600 to-violet-600 text-white rounded-xl p-4"><div className="flex items-center justify-between gap-2"><b>How can I help you today?</b><Orb size={40}/></div><div className="bg-white/20 rounded-lg p-2 mt-3 text-sm">Ask anything about your campus...</div></div><div className="bg-slate-50 rounded-xl p-4 text-sm space-y-2"><div>📢 End Semester Examination Schedule</div><div>🎉 Innovate 2026 Tech Fest</div><div>🗓️ 09:00 Machine Learning</div></div></div></Card></section>
+ <section id="f" className="px-5 lg:px-16 py-14 grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto">{F.map(([i,t,d])=><Card key={t} c="p-5"><div className="text-2xl">{i}</div><h3 className="font-semibold mt-2">{t}</h3><p className="text-sm text-slate-500">{d}</p></Card>)}</section>
+ <section className="px-5 py-10 max-w-4xl mx-auto"><h2 className="text-3xl font-bold text-center mb-8">How CampusAI Works</h2><div className="grid md:grid-cols-3 gap-4">{['Ask','CampusAI retrieves relevant campus information','Get a contextual answer or access the required service'].map((t,i)=><Card key={i} c="p-5"><div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center mb-2">{i+1}</div><b>Step {i+1}</b><p className="text-sm text-slate-600">{t}</p></Card>)}</div></section>
+ <section className="m-5 lg:mx-16 rounded-3xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-center p-10"><h2 className="text-3xl font-bold">Ready to meet your campus assistant?</h2><Btn v="s" c="mt-5 !text-indigo-700" onClick={()=>nav('/signup')}>Get Started</Btn></section></div>}
+
+function Auth({signup}){
+  const {toast}=useContext(Ctx);
+  const [f,setF]=useState({name:'',email:'',password:'',sid:'',dept:DEPTS[0],sem:'1'});
+  const [e,setE]=useState({});
+  const [loading,setLoading]=useState(false);
+
+  const ch=k=>ev=>setF({...f,[k]:ev.target.value});
+
+  const go=async()=>{
+    const x={};
+    if(signup&&!f.name.trim())x.name='Name is required';
+    if(!/^\S+@\S+\.\S+$/.test(f.email))x.email='Enter a valid email';
+    if(f.password.length<6)x.password='Min 6 characters';
+    if(signup&&!f.sid.trim())x.sid='Student ID is required';
+    setE(x);
+    if(Object.keys(x).length)return;
+
+    setLoading(true);
+
+    try{
+      if(signup){
+        const {data,error}=await supabase.auth.signUp({
+          email:f.email,
+          password:f.password,
+          options:{data:{full_name:f.name}}
+        });
+
+        if(error)throw error;
+        if(!data.user)throw new Error('Unable to create account.');
+
+        const {error:profileError}=await supabase
+          .from('profiles')
+          .update({
+            full_name:f.name,
+            email:f.email,
+            student_id:f.sid,
+            department:f.dept,
+            semester:Number(f.sem),
+            role:'student'
+          })
+          .eq('id',data.user.id);
+
+        if(profileError)throw profileError;
+
+        if(!data.session){
+          toast('Account created. Check your email to confirm, then login.');
+          nav('/login');
+        }else{
+          toast('Account created successfully!');
+          nav('/student/dashboard');
+        }
+      }else{
+        const {data,error}=await supabase.auth.signInWithPassword({
+          email:f.email,
+          password:f.password
+        });
+
+        if(error)throw error;
+
+        const {data:profile,error:profileError}=await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id',data.user.id)
+          .single();
+
+        if(profileError)throw profileError;
+
+        nav(profile.role==='admin'?'/admin/dashboard':'/student/dashboard');
+        toast('Welcome back!');
+      }
+    }catch(err){
+      console.error(err);
+      toast(err.message||'Authentication failed','err');
+    }finally{
+      setLoading(false);
+    }
+  };
+
+  return <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-indigo-50 to-violet-50">
+    <Card c="w-full max-w-md p-7">
+      <Logo/>
+      <h1 className="text-2xl font-bold mt-4">{signup?'Create your account':'Welcome back'}</h1>
+      <p className="text-sm text-slate-500 mb-5">Your Campus. One Intelligent Assistant.</p>
+
+      {signup&&<Field l="Full Name" value={f.name} onChange={ch('name')} err={e.name}/>}
+      <Field l="Email" t="email" value={f.email} onChange={ch('email')} err={e.email}/>
+      <Field l="Password" t="password" value={f.password} onChange={ch('password')} err={e.password}/>
+
+      {signup&&<>
+        <Field l="Student ID" value={f.sid} onChange={ch('sid')} err={e.sid}/>
+        <Field l="Department" t="select" opts={DEPTS} value={f.dept} onChange={ch('dept')}/>
+        <Field l="Semester" t="select" opts={['1','2','3','4','5','6','7','8']} value={f.sem} onChange={ch('sem')}/>
+      </>}
+
+      {!signup&&<div className="flex justify-between text-sm mb-4">
+        <label><input type="checkbox" defaultChecked/> Remember me</label>
+        <button className="text-indigo-600" onClick={()=>toast('Password reset can be added next.')}>Forgot password?</button>
+      </div>}
+
+      <Btn c="w-full" disabled={loading} onClick={go}>
+        {loading?'Please wait...':(signup?'Create Account':'Login')}
+      </Btn>
+
+      {!signup&&<p className="text-xs text-slate-500 text-center mt-3">
+        Admin users are automatically routed to the Admin Dashboard based on their Supabase role.
+      </p>}
+
+      <p className="text-sm text-center mt-4 text-slate-500">
+        {signup?'Have an account? ':'New here? '}
+        <a className="text-indigo-600 font-medium" href={signup?'#/login':'#/signup'}>
+          {signup?'Login':'Sign up'}
+        </a>
+      </p>
+    </Card>
+  </div>
+}
+
+const dayName=()=>{const d=new Date().getDay();return ['Monday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][d]};
+const parse=s=>{const [a,b,c,d,e]=s.split('|');return {sub:a,fac:b,room:c,st:d,en:e}};
+const ClassRow=({c})=><div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50"><div className="text-xs text-indigo-700 font-semibold w-24">{c.st} – {c.en}</div><div className="flex-1"><div className="font-medium text-sm">{c.sub}</div><div className="text-xs text-slate-500">{c.fac} · {c.room}</div></div></div>;
+
+function Assistant({compact}){
+ const {S}=useContext(Ctx);
+ const [msgs,setM]=useState([{r:'a',t:'Hi! I’m CampusAI 👋 Ask me about your timetable, notices, events, complaints, or campus FAQs.'}]);
+ const [q,setQ]=useState(''),[ty,setTy]=useState(false);
+ const P=['What classes do I have today?','Show me the latest examination notice','What is the status of my complaint?','What events are happening this week?'];
+ const answer=async(t)=>{
+   const l=t.toLowerCase();
+   if(l.includes('class')||l.includes('timetable')||l.includes('schedule')){
+     const d=new Date().getDay();
+     const day=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][d];
+     const rows=S.tt[day]||[];
+     if(!rows.length)return ['There are no timetable entries available for '+day+'.','Based on your timetable'];
+     const parsed=rows.map(x=>parse(x));
+     return [day+"'s schedule:\n\n"+parsed.map(x=>`${x.st} – ${x.en}  ${x.sub}\n${x.fac} · ${x.room}`).join('\n\n'),'Based on your timetable'];
+   }
+   if(l.includes('notice')||l.includes('exam')||l.includes('announcement')){
+     const {data,error}=await supabase.from('notices').select('*').eq('published',true).order('created_at',{ascending:false}).limit(1).maybeSingle();
+     if(error)return ['I could not load the latest notice right now. Please try again.','Campus Notices'];
+     if(!data)return ['There are no published notices available right now.','Campus Notices'];
+     return [`Latest notice: ${data.title}\n\n${data.content||'No additional details.'}\n\nPriority: ${data.priority||'Normal'}`,'Based on College Notices'];
+   }
+   if(l.includes('complaint')||l.includes('grievance')){
+     const {data:{user}}=await supabase.auth.getUser();
+     if(!user)return ['Please log in to view your complaint status.','Authentication'];
+     const {data,error}=await supabase.from('complaints').select('id,title,status,admin_response,created_at').eq('user_id',user.id).order('created_at',{ascending:false}).limit(1).maybeSingle();
+     if(error)return ['I could not load your complaint status right now. Please try again.','Your Complaints'];
+     if(!data)return ['You have not submitted any complaints yet.','Your Complaints'];
+     return [`Your latest complaint (#${data.id}) is currently ${data.status}.\n\n${data.title}${data.admin_response?'\n\nAdmin response: '+data.admin_response:''}`,'Based on your complaints'];
+   }
+   if(l.includes('event')||l.includes('workshop')||l.includes('happening')){
+     const today=new Date().toISOString().slice(0,10); const end=new Date(); end.setDate(end.getDate()+7); const endDate=end.toISOString().slice(0,10);
+     const {data,error}=await supabase.from('events').select('*').eq('published',true).gte('event_date',today).lte('event_date',endDate).order('event_date',{ascending:true}).order('start_time',{ascending:true}).limit(5);
+     if(error)return ['I could not load upcoming events right now. Please try again.','Campus Events'];
+     if(!data?.length)return ['There are no published events scheduled in the next 7 days.','Campus Events'];
+     return ['Upcoming events:\n\n'+data.map(e=>`${e.title}\n${e.event_date}${e.start_time?' · '+String(e.start_time).slice(0,5):''}${e.venue?' · '+e.venue:''}`).join('\n\n'),'Based on Campus Events'];
+   }
+   const f=S.faqs.find(x=>l.split(/\s+/).some(w=>w.length>4&&x.q.toLowerCase().includes(w)));
+   if(f)return [f.a,'Based on Campus FAQs'];
+   return ["I couldn't find a reliable answer yet. Try asking about your timetable, notices, events, complaints, or campus FAQs.",'No source found'];
+ };
+ const send=async t=>{
+   t=t||q;if(!t.trim()||ty)return; setQ('');setM(m=>[...m,{r:'u',t}]);setTy(true);
+   try{const [a,src]=await answer(t);setM(m=>[...m,{r:'a',t:a,src}]);}
+   catch(e){console.error('ASSISTANT ERROR:',e);setM(m=>[...m,{r:'a',t:'Something went wrong while checking campus data. Please try again.',src:'CampusAI'}]);}
+   finally{setTy(false);}
+ };
+ return <div className={compact?'':'flex flex-col h-[calc(100vh-9rem)]'}>{!compact&&<Head t="CampusAI Assistant" s="Ask questions about your campus."><Orb size={84} busy={ty}/></Head>}
+ <Card c={'flex flex-col '+(compact?'':'flex-1 min-h-0')}>{compact&&<div className="absolute top-2 right-3 z-10"><Orb size={44} busy={ty}/></div>}<div className={'overflow-auto p-4 space-y-3 '+(compact?'max-h-64':'flex-1')}>{msgs.map((m,i)=><div key={i} className={'flex '+(m.r==='u'?'justify-end':'')}><div className={'max-w-[85%] rounded-2xl px-4 py-2.5 text-sm whitespace-pre-line '+(m.r==='u'?'bg-indigo-600 text-white':'bg-slate-100')}>{m.t}{m.src&&<div className="text-xs text-slate-500 mt-2">📎 {m.src}</div>}</div></div>)}{ty&&<div className="bg-slate-100 rounded-2xl px-4 py-2.5 w-fit text-sm animate-pulse">CampusAI is checking campus data...</div>}</div>
+ <div className="p-3 border-t border-slate-100"><div className="flex gap-2 overflow-x-auto mb-2">{P.map(p=><button key={p} onClick={()=>send(p)} className="text-xs whitespace-nowrap border border-indigo-200 text-indigo-700 rounded-full px-3 py-1 hover:bg-indigo-50">{p}</button>)}</div><div className="flex gap-2"><input className={inp} placeholder="Ask anything about your campus..." value={q} onChange={e=>setQ(e.target.value)} onKeyDown={e=>e.key==='Enter'&&send()}/><Btn onClick={()=>send()}>Send</Btn></div></div></Card></div>}
+
+const NoticeCard=({n})=><Card c="p-4 cursor-pointer hover:shadow-md" onClick={()=>nav('/student/notices/'+n.id)}><div className="flex justify-between gap-2"><Badge s={n.cat}/><span className="text-xs text-slate-400">{fmt(n.date)}</span></div><h3 className="font-semibold mt-2">{n.title}</h3><p className="text-sm text-slate-500">{n.desc}</p></Card>;
+const ComplaintRow=({c,onClick})=><tr className="border-t border-slate-100 cursor-pointer hover:bg-slate-50" onClick={onClick}><td className="p-3">#{c.id}</td><td className="p-3">{c.title}</td><td className="p-3">{c.cat}</td><td className="p-3">{fmt(c.date)}</td><td className="p-3"><Badge s={c.status}/></td></tr>;
+
+function StudentPage({seg}){
+  const {S,me,setMe,toast,profile}=useContext(Ctx);
+  const [detailComplaint,setDetailComplaint]=useState(null);
+  const [tab,setTab]=useState('Upcoming');
+  const [q,setQ]=useState('');
+  const [cat,setCat]=useState('');
+  const [dt,setDt]=useState('');
+  const [day,setDay]=useState(dayName());
+  const [cf,setCf]=useState({cat:'Academic',title:'',desc:''});
+  const [done,setDone]=useState(null);
+  const [ed,setEd]=useState(false);
+  const [pf,setPf]=useState(me);
+
+  const [a,b]=[seg[1],seg[2]];
+
+  useEffect(()=>{
+    setPf(me);
+  },[me.name,me.id,me.email,me.dept,me.sem]);
+
+  useEffect(()=>{
+    const loadMyComplaints=async()=>{
+      const {data:{user},error:authError}=await supabase.auth.getUser();
+      if(authError || !user){
+        console.error('COMPLAINT AUTH ERROR:',authError);
+        return;
+      }
+
+      const {data,error}=await supabase
+        .from('complaints')
+        .select('*')
+        .eq('user_id',user.id)
+        .order('created_at',{ascending:false});
+
+      if(error){
+        console.error('MY COMPLAINT LOAD ERROR:',error);
+        toast(error.message,'err');
+        return;
+      }
+
+      const mapped=(data||[]).map(c=>({
+        id:c.id,
+        title:c.title,
+        desc:c.description||'',
+        cat:c.category||'Other',
+        location:c.location||'',
+        status:c.status,
+        priority:c.priority,
+        date:c.created_at,
+        student:me.name,
+        resp:c.admin_response||''
+      }));
+
+      S.setC(mapped);
+    };
+
+    if(a==='complaints' && !b){
+      loadMyComplaints();
+    }
+  },[a,b]);
+
+  useEffect(()=>{
+    const loadComplaintDetail=async()=>{
+      if(a!=='complaints' || !b || b==='new') return;
+
+      setDetailComplaint(null);
+
+      const {data:{user},error:authError}=await supabase.auth.getUser();
+      if(authError || !user){
+        console.error('DETAIL AUTH ERROR:',authError);
+        return;
+      }
+
+      const {data,error}=await supabase
+        .from('complaints')
+        .select('*')
+        .eq('id',b)
+        .eq('user_id',user.id)
+        .single();
+
+      if(error){
+        console.error('COMPLAINT DETAIL LOAD ERROR:',error);
+        setDetailComplaint(null);
+        return;
+      }
+
+      setDetailComplaint({
+        id:data.id,
+        title:data.title,
+        desc:data.description||'',
+        cat:data.category||'Other',
+        location:data.location||'',
+        status:data.status,
+        priority:data.priority,
+        date:data.created_at,
+        student:me.name,
+        resp:data.admin_response||''
+      });
+    };
+
+    loadComplaintDetail();
+  },[a,b]);
+
+  const mine=S.complaints||[];
+  const act=S.notices.filter(n=>n.status==='Active');
+
+  if(a==='dashboard'){
+    const cls=S.tt[dayName()]||[];
+    return <div>
+      <Head t={`Good Morning, ${me.name} 👋`} s="Here's what's happening on your campus today."/>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
+        <Stat i="📚" l="Today's Classes" v={cls.length}/>
+        <Stat i="🎉" l="Upcoming Events" v={S.events.filter(e=>e.date>=TODAY).length} c="bg-violet-50"/>
+        <Stat i="📝" l="Active Complaints" v={mine.filter(c=>c.status==='In Progress'||c.status==='Under Review'||c.status==='Submitted').length} c="bg-amber-50"/>
+        <Stat i="📢" l="New Notices" v={act.length} c="bg-green-50"/>
+      </div>
+      <Card c="p-5 mb-5 bg-gradient-to-br from-indigo-600 to-violet-600 !border-0">
+        <h2 className="text-white text-xl font-bold mb-3">How can I help you today?</h2>
+        <input className={inp} placeholder="Ask anything about your campus..." onKeyDown={e=>e.key==='Enter'&&nav('/student/assistant')}/>
+        <div className="flex flex-wrap gap-2 mt-3">
+          {['What classes do I have tomorrow?','Show me the latest examination notice','What is the status of my complaint?','What events are happening this week?'].map(p=><button key={p} onClick={()=>nav('/student/assistant')} className="text-xs bg-white/20 text-white rounded-full px-3 py-1">{p}</button>)}
+        </div>
+      </Card>
+      <div className="flex flex-wrap gap-2 mb-5">
+        {[['Ask CampusAI','/student/assistant'],['View Timetable','/student/timetable'],['Submit Complaint','/student/complaints/new'],['View Notices','/student/notices']].map(([l,p])=><Btn key={l} v="s" onClick={()=>nav(p)}>{l}</Btn>)}
+      </div>
+      <div className="grid lg:grid-cols-2 gap-4">
+        <Card c="p-5"><h3 className="font-semibold mb-3">Latest Notices</h3><div className="space-y-2">{act.slice(0,3).map(n=><a key={n.id} href={'#/student/notices/'+n.id} className="block text-sm p-2 rounded-lg hover:bg-slate-50"><b>{n.title}</b><div className="text-xs text-slate-400">{fmt(n.date)}</div></a>)}</div></Card>
+        <Card c="p-5"><h3 className="font-semibold mb-3">Upcoming Events</h3><div className="space-y-2">{S.events.filter(e=>e.date>=TODAY).slice(0,3).map(e=><a key={e.id} href={'#/student/events/'+e.id} className="block text-sm p-2 rounded-lg hover:bg-slate-50"><b>{e.title}</b><div className="text-xs text-slate-400">{fmt(e.date)} · {e.loc}</div></a>)}</div></Card>
+        <Card c="p-5"><h3 className="font-semibold mb-3">Today's Timetable</h3><div className="space-y-2">{cls.map(x=><ClassRow key={x} c={parse(x)}/>)}</div></Card>
+        <Card c="p-5"><h3 className="font-semibold mb-3">Complaint Status</h3>{mine.length?mine.slice(0,3).map(c=><div key={c.id} className="flex justify-between text-sm py-2 border-b border-slate-100"><span>#{c.id} {c.title}</span><Badge s={c.status}/></div>):<Empty/>}</Card>
+      </div>
+    </div>;
+  }
+
+  if(a==='assistant')return <Assistant/>;
+
+  if(a==='notices'&&b){
+    const n=S.notices.find(x=>x.id==b);
+    if(!n)return <Empty t="Notice not found"/>;
+    return <div className="max-w-3xl"><Btn v="s" onClick={()=>nav('/student/notices')}>← Back to Notices</Btn><Card c="p-6 mt-4"><Badge s={n.cat}/><h1 className="text-2xl font-bold mt-2">{n.title}</h1><p className="text-sm text-slate-500 mb-4">{fmt(n.date)} · By {n.author}</p><p className="leading-relaxed">{n.body||n.desc}</p><Btn v="s" c="mt-5" onClick={()=>{navigator.clipboard?.writeText(location.href).catch(()=>{});toast('Link copied')}}>Share</Btn></Card></div>;
+  }
+
+  if(a==='notices'){
+    const days={'':1e5,'Last 7 days':7,'Last 30 days':30};
+    const L=act.filter(n=>(n.title+n.desc).toLowerCase().includes(q.toLowerCase())&&(!cat||n.cat===cat)&&(new Date(TODAY)-new Date(n.date))/864e5<=(days[dt]||1e5));
+    return <div><Head t="College Notices"/><div className="flex flex-wrap gap-2 mb-4"><input className={inp+' max-w-xs'} placeholder="Search notices..." value={q} onChange={e=>setQ(e.target.value)}/><select className={inp+' max-w-[160px]'} value={cat} onChange={e=>setCat(e.target.value)}><option value="">All categories</option>{CATS.map(c=><option key={c}>{c}</option>)}</select><select className={inp+' max-w-[160px]'} value={dt} onChange={e=>setDt(e.target.value)}><option value="">Any date</option><option>Last 7 days</option><option>Last 30 days</option></select></div>{L.length?<div className="grid md:grid-cols-2 gap-3">{L.map(n=><NoticeCard key={n.id} n={n}/>)}</div>:<Empty/>}</div>;
+  }
+
+  if(a==='events'&&b){
+    const e=S.events.find(x=>x.id==b);
+    if(!e)return <Empty t="Event not found"/>;
+    return <div className="max-w-3xl"><Card c="p-6"><h1 className="text-2xl font-bold">{e.title}</h1><div className="text-sm text-slate-600 my-3 space-y-1"><div>📅 {fmt(e.date)}</div><div>⏰ {e.time}</div><div>📍 {e.loc}</div><div>🏛️ {e.org}</div></div><p>{e.desc}</p><div className="flex gap-2 mt-5"><Btn onClick={()=>e.registration_url?window.open(e.registration_url,'_blank'):toast('Registration link not available','err')}>Register</Btn><Btn v="s" onClick={()=>nav('/student/events')}>Back to Events</Btn></div></Card></div>;
+  }
+
+  if(a==='events'){
+    const L=S.events.filter(e=>tab==='Upcoming'?e.date>=TODAY:e.date<TODAY);
+    return <div><Head t="Campus Events"/><Tabs tabs={['Upcoming','Past']} v={tab} set={setTab}/>{L.length?<div className="grid md:grid-cols-2 gap-3">{L.map(e=><Card key={e.id} c="p-4"><h3 className="font-semibold">{e.title}</h3><div className="text-xs text-slate-500 my-2">📅 {fmt(e.date)} · ⏰ {e.time} · 📍 {e.loc}</div><p className="text-sm text-slate-600 mb-3">{e.desc}</p><Btn v="s" onClick={()=>nav('/student/events/'+e.id)}>View Details</Btn></Card>)}</div>:<Empty/>}</div>;
+  }
+
+  if(a==='timetable')return <div><Head t="Timetable" s={"Today's Schedule: "+dayName()}/><Tabs tabs={Object.keys(S.tt)} v={day} set={setDay}/><div className="space-y-2 max-w-2xl">{(S.tt[day]||[]).map(x=><ClassRow key={x} c={parse(x)}/>)}</div></div>;
+
+  if(a==='complaints'&&b==='new'){
+    const sub=async()=>{
+      if(!cf.title.trim())return toast('Please enter complaint title','err');
+      if(cf.desc.trim().length<10)return toast('Description must be at least 10 characters','err');
+
+      const {data:{user},error:userError}=await supabase.auth.getUser();
+      if(userError||!user){console.error('AUTH ERROR:',userError);return toast('Please login again','err');}
+
+      const {data,error}=await supabase.from('complaints').insert({
+        user_id:user.id,
+        title:cf.title.trim(),
+        description:cf.desc.trim(),
+        category:cf.cat||'Other',
+        location:'',
+        status:'Submitted',
+        priority:'Normal'
+      }).select('*').single();
+
+      if(error){console.error('COMPLAINT CREATE ERROR:',error);toast(error.message,'err');return;}
+
+      const newComplaint={
+        id:data.id,title:data.title,desc:data.description,cat:data.category,
+        location:data.location||'',status:data.status,priority:data.priority,
+        date:data.created_at,student:me.name,resp:data.admin_response||''
+      };
+
+      S.setC(prev=>[newComplaint,...prev]);
+      setDone(newComplaint);
+      toast('Complaint submitted successfully');
+    };
+
+    return <div className="max-w-2xl"><Head t="Submit Complaint"/>{done?<Card c="p-6"><div className="text-green-600 font-semibold mb-1">✅ Complaint submitted successfully.</div><p className="text-sm text-slate-500 mb-4">Tracking ID #{done.id}</p><Timeline idx={0}/><Btn c="mt-5" onClick={()=>nav('/student/complaints/'+done.id)}>View Complaint</Btn></Card>:<Card c="p-6"><Field l="Category" t="select" opts={['Academic','Hostel','Infrastructure','Canteen','Other']} value={cf.cat} onChange={e=>setCf({...cf,cat:e.target.value})}/><Field l="Title" value={cf.title} onChange={e=>setCf({...cf,title:e.target.value})}/><Field l="Description" t="textarea" value={cf.desc} onChange={e=>setCf({...cf,desc:e.target.value})}/><div className="border-2 border-dashed border-slate-300 rounded-xl p-4 text-center text-sm text-slate-500 mb-4">📎 Attach a file (optional)</div><Btn onClick={sub}>Submit Complaint</Btn></Card>}</div>;
+  }
+
+  if(a==='complaints'&&b){
+    const c=detailComplaint;
+    if(!c)return <div className="max-w-3xl"><Btn v="s" onClick={()=>nav('/student/complaints')}>← Back</Btn><Card c="p-6 mt-4"><div className="text-center text-slate-500">Loading complaint...</div></Card></div>;
+    return <div className="max-w-3xl"><Btn v="s" onClick={()=>nav('/student/complaints')}>← Back</Btn><div className="grid md:grid-cols-5 gap-4 mt-4"><Card c="p-6 md:col-span-3"><div className="flex justify-between"><span className="text-slate-400">#{c.id}</span><Badge s={c.status}/></div><h1 className="text-xl font-bold my-2">{c.title}</h1><div className="text-xs text-slate-500 mb-3">{c.cat} · {fmt(c.date)}</div><p className="text-sm">{c.desc}</p>{c.location&&<div className="text-sm text-slate-500 mt-3">📍 {c.location}</div>}{c.resp&&<div className="mt-4 bg-indigo-50 rounded-xl p-3 text-sm"><b>Admin response:</b> {c.resp}</div>}</Card><Card c="p-6 md:col-span-2"><h3 className="font-semibold mb-3">Progress</h3><Timeline idx={tlIdx(c.status)} rej={c.status==='Rejected'}/></Card></div></div>;
+  }
+
+  if(a==='complaints'){
+    return <div><Head t="My Complaints"><Btn onClick={()=>nav('/student/complaints/new')}>+ Submit Complaint</Btn></Head><Card c="overflow-x-auto">{mine.length?<table className="w-full text-sm"><thead className="bg-slate-50 text-left text-slate-500"><tr>{['ID','Title','Category','Submitted','Status'].map(h=><th key={h} className="p-3">{h}</th>)}</tr></thead><tbody>{mine.map(c=><ComplaintRow key={c.id} c={c} onClick={()=>nav('/student/complaints/'+c.id)}/>)}</tbody></table>:<Empty t="No complaints yet"/>}</Card></div>;
+  }
+
+  if(a==='profile'){
+    const saveProfile=async()=>{
+      if(!pf.name.trim())return toast('Name required','err');
+
+      const {data:{user},error:userError}=await supabase.auth.getUser();
+      if(userError||!user)return toast('Please login again','err');
+
+      const {data,error}=await supabase.from('profiles').update({
+        full_name:pf.name.trim(),
+        email:pf.email.trim(),
+        department:pf.dept,
+        semester:Number(pf.sem)
+      }).eq('id',user.id).select('*').single();
+
+      if(error){console.error('PROFILE UPDATE ERROR:',error);toast(error.message,'err');return;}
+
+      setMe(data);
+      setPf({
+        name:data.full_name||'',id:data.student_id||'',email:data.email||user.email||'',
+        dept:data.department||DEPTS[0],sem:String(data.semester||1)
+      });
+      setEd(false);
+      toast('Profile updated successfully');
+    };
+
+    const s=k=>e=>setPf({...pf,[k]:e.target.value});
+
+    return <div className="max-w-2xl"><Head t="Profile"><Btn onClick={()=>ed?saveProfile():setEd(true)}>{ed?'Save Changes':'Edit Profile'}</Btn></Head><Card c="p-6"><div className="flex items-center gap-4 mb-5"><div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-600 to-violet-500 text-white text-2xl flex items-center justify-center">{(me.name||'S')[0]}</div><div><b className="text-lg">{me.name}</b><div className="text-sm text-slate-500">{me.id}</div></div></div><h3 className="font-semibold mb-2">Personal Information</h3><div className="grid sm:grid-cols-2 gap-x-3"><Field l="Full Name" disabled={!ed} value={pf.name||''} onChange={s('name')}/><Field l="Email" disabled={!ed} value={pf.email||''} onChange={s('email')}/></div><h3 className="font-semibold mb-2">Academic Information</h3><div className="grid sm:grid-cols-3 gap-x-3"><Field l="Student ID" disabled value={pf.id||''}/><Field l="Department" disabled={!ed} t="select" opts={DEPTS} value={pf.dept||DEPTS[0]} onChange={s('dept')}/><Field l="Semester" disabled={!ed} t="select" opts={['1','2','3','4','5','6','7','8']} value={pf.sem||'1'} onChange={s('sem')}/></div><h3 className="font-semibold mb-2">Account Settings</h3><label className="text-sm block"><input type="checkbox" defaultChecked/> Email notifications</label></Card></div>;
+  }
+
+  return <Empty t="Page not found"/>;
+}
+
+function AdminFAQs(){
+  const {toast,authUser,S}=useContext(Ctx);
+  const [items,setItems]=useState([]);
+  const [q,setQ]=useState('');
+  const [m,setM]=useState(null);
+  const [loading,setLoading]=useState(true);
+
+  const load=async()=>{
+    setLoading(true);
+    const {data,error}=await supabase
+      .from('faqs')
+      .select('id,question,answer,category,keywords,published,created_by,created_at,updated_at')
+      .order('created_at',{ascending:false});
+
+    if(error){
+      console.error('ADMIN FAQ LOAD ERROR:',error);
+      toast(error.message,'err');
+      setLoading(false);
+      return;
+    }
+
+    const mapped=(data||[]).map(f=>({
+      id:f.id,
+      q:f.question||'',
+      a:f.answer||'',
+      cat:f.category||'General',
+      keywords:Array.isArray(f.keywords)?f.keywords.join(', '):(f.keywords||''),
+      published:f.published!==false,
+      created_by:f.created_by||null,
+      created_at:f.created_at,
+      updated_at:f.updated_at
+    }));
+
+    setItems(mapped);
+    setLoading(false);
+  };
+
+  useEffect(()=>{load();},[]);
+
+  const save=async()=>{
+    if(!m.q.trim())return toast('Question is required','err');
+    if(!m.a.trim())return toast('Answer is required','err');
+
+    const keywords=m.keywords
+      ? m.keywords.split(',').map(x=>x.trim()).filter(Boolean)
+      : [];
+
+    const payload={
+      question:m.q.trim(),
+      answer:m.a.trim(),
+      category:m.cat?.trim()||'General',
+      keywords,
+      published:m.published!==false
+    };
+
+    let data,error;
+
+    if(m.id){
+      ({data,error}=await supabase
+        .from('faqs')
+        .update(payload)
+        .eq('id',m.id)
+        .select('*')
+        .single());
+    }else{
+      ({data,error}=await supabase
+        .from('faqs')
+        .insert({
+          ...payload,
+          created_by:authUser?.id||null
+        })
+        .select('*')
+        .single());
+    }
+
+    if(error){
+      console.error('FAQ SAVE ERROR:',error);
+      toast(error.message,'err');
+      return;
+    }
+
+    const mapped={
+      id:data.id,
+      q:data.question||'',
+      a:data.answer||'',
+      cat:data.category||'General',
+      keywords:Array.isArray(data.keywords)?data.keywords.join(', '):(data.keywords||''),
+      published:data.published!==false,
+      created_by:data.created_by||null,
+      created_at:data.created_at,
+      updated_at:data.updated_at
+    };
+
+    const next=m.id
+      ? items.map(x=>x.id===m.id?mapped:x)
+      : [mapped,...items];
+
+    setItems(next);
+    S.setF(next.filter(x=>x.published));
+    setM(null);
+    toast(m.id?'FAQ updated successfully':'FAQ created successfully');
+  };
+
+  const del=async(id)=>{
+    if(!confirm('Delete this FAQ?'))return;
+
+    const {error}=await supabase
+      .from('faqs')
+      .delete()
+      .eq('id',id);
+
+    if(error){
+      console.error('FAQ DELETE ERROR:',error);
+      toast(error.message,'err');
+      return;
+    }
+
+    const next=items.filter(x=>x.id!==id);
+    setItems(next);
+    S.setF(next.filter(x=>x.published));
+    toast('FAQ deleted successfully');
+  };
+
+  const list=items.filter(x=>
+    (x.q+' '+x.a+' '+x.cat+' '+x.keywords).toLowerCase().includes(q.toLowerCase())
+  );
+
+  const blank={q:'',a:'',cat:'General',keywords:'',published:true};
+
+  return <div>
+    <Head t="FAQ Management" s="Manage the knowledge base used by CampusAI." >
+      <Btn onClick={()=>setM(blank)}>+ Create FAQ</Btn>
+    </Head>
+
+    <div className="flex flex-wrap gap-2 mb-4">
+      <input
+        className={inp+' max-w-md'}
+        placeholder="Search questions, answers or keywords..."
+        value={q}
+        onChange={e=>setQ(e.target.value)}
+      />
+    </div>
+
+    <Card c="overflow-x-auto">
+      {loading ? <div className="p-10 text-center text-slate-500">Loading FAQs...</div> :
+       list.length ? <table className="w-full text-sm">
+        <thead className="bg-slate-50 text-left text-slate-500">
+          <tr>
+            {['Question','Answer','Category','Keywords','Published'].map(h=><th key={h} className="p-3">{h}</th>)}
+            <th className="p-3">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {list.map(f=><tr key={f.id} className="border-t border-slate-100 align-top">
+            <td className="p-3 min-w-[220px] font-medium">{f.q}</td>
+            <td className="p-3 min-w-[280px] text-slate-600">{f.a}</td>
+            <td className="p-3">{f.cat}</td>
+            <td className="p-3 text-slate-500">{f.keywords||'—'}</td>
+            <td className="p-3"><Badge s={f.published?'Active':'Draft'}/></td>
+            <td className="p-3 whitespace-nowrap">
+              <button className="text-indigo-600 mr-3" onClick={()=>setM({...f})}>Edit</button>
+              <button className="text-red-600" onClick={()=>del(f.id)}>Delete</button>
+            </td>
+          </tr>)}
+        </tbody>
+      </table> : <Empty t="No FAQs found"/>}
+    </Card>
+
+    {m&&<Modal title={(m.id?'Edit ':'Create ')+'FAQ'} onClose={()=>setM(null)}>
+      <Field l="Question" value={m.q} onChange={e=>setM({...m,q:e.target.value})}/>
+      <Field l="Answer" t="textarea" value={m.a} onChange={e=>setM({...m,a:e.target.value})}/>
+      <Field l="Category" value={m.cat} onChange={e=>setM({...m,cat:e.target.value})}/>
+      <Field l="Keywords" value={m.keywords} placeholder="attendance, exam, eligibility" onChange={e=>setM({...m,keywords:e.target.value})}/>
+      <label className="flex items-center gap-2 text-sm mb-4">
+        <input type="checkbox" checked={m.published!==false} onChange={e=>setM({...m,published:e.target.checked})}/>
+        Publish FAQ for students / AI Assistant
+      </label>
+      <div className="flex gap-2 justify-end">
+        <Btn v="s" onClick={()=>setM(null)}>Cancel</Btn>
+        <Btn onClick={save}>Save</Btn>
+      </div>
+    </Modal>}
+  </div>;
+}
+
+function AdminNotices(){
+  const {toast,authUser}=useContext(Ctx);
+
+  const [items,setItems]=useState([]);
+  const [loading,setLoading]=useState(true);
+  const [m,setM]=useState(null);
+
+  const loadNotices=async()=>{
+    setLoading(true);
+
+    const {data,error}=await supabase
+      .from('notices')
+      .select('*')
+      .order('created_at',{ascending:false});
+
+    if(error){
+      console.error('ADMIN NOTICE LOAD ERROR:',error);
+      toast(error.message,'err');
+      setLoading(false);
+      return;
+    }
+
+    setItems(data||[]);
+    setLoading(false);
+  };
+
+  useEffect(()=>{
+    loadNotices();
+  },[]);
+
+  const blank={
+    title:'',
+    content:'',
+    category:CATS[0]||'General',
+    priority:'Normal',
+    published:true
+  };
+
+  const save=async()=>{
+    if(!m.title.trim() || !m.content.trim()){
+      toast('Title and content are required','err');
+      return;
+    }
+
+    if(m.id){
+      const {data,error}=await supabase
+        .from('notices')
+        .update({
+          title:m.title,
+          content:m.content,
+          category:m.category,
+          priority:m.priority,
+          published:m.published
+        })
+        .eq('id',m.id)
+        .select()
+        .single();
+
+      if(error){
+        console.error('NOTICE UPDATE ERROR:',error);
+        toast(error.message,'err');
+        return;
+      }
+
+      setItems(items.map(x=>x.id===m.id?data:x));
+      toast('Notice updated successfully');
+    }else{
+      const {data,error}=await supabase
+        .from('notices')
+        .insert({
+          title:m.title,
+          content:m.content,
+          category:m.category,
+          priority:m.priority,
+          published:m.published,
+          author_id:authUser?.id||null
+        })
+        .select()
+        .single();
+
+      if(error){
+        console.error('NOTICE CREATE ERROR:',error);
+        toast(error.message,'err');
+        return;
+      }
+
+      setItems([data,...items]);
+      toast('Notice created successfully');
+    }
+
+    setM(null);
+  };
+
+  const remove=async(id)=>{
+    if(!confirm('Delete this notice?')) return;
+
+    const {error}=await supabase
+      .from('notices')
+      .delete()
+      .eq('id',id);
+
+    if(error){
+      console.error('NOTICE DELETE ERROR:',error);
+      toast(error.message,'err');
+      return;
+    }
+
+    setItems(items.filter(x=>x.id!==id));
+    toast('Notice deleted successfully');
+  };
+
+  return (
+    <div>
+      <Head t="Manage Notices" s="Create and manage campus notices.">
+        <Btn onClick={()=>setM({...blank})}>+ Create Notice</Btn>
+      </Head>
+
+      <Card c="overflow-x-auto">
+        {loading ? (
+          <div className="p-6 text-center text-slate-500">
+            Loading notices...
+          </div>
+        ) : items.length ? (
+          <table className="w-full text-sm">
+            <thead className="bg-slate-50 text-left text-slate-500">
+              <tr>
+                <th className="p-3">Title</th>
+                <th className="p-3">Category</th>
+                <th className="p-3">Priority</th>
+                <th className="p-3">Created</th>
+                <th className="p-3">Status</th>
+                <th className="p-3">Actions</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {items.map(n=>(
+                <tr key={n.id} className="border-t border-slate-100">
+                  <td className="p-3 font-medium">{n.title}</td>
+                  <td className="p-3">{n.category}</td>
+                  <td className="p-3">{n.priority}</td>
+                  <td className="p-3">{fmt(n.created_at)}</td>
+                  <td className="p-3">
+                    <Badge s={n.published?'Active':'Draft'}/>
+                  </td>
+                  <td className="p-3 whitespace-nowrap">
+                    <button
+                      className="text-indigo-600 mr-3"
+                      onClick={()=>setM({
+                        ...n,
+                        published:Boolean(n.published)
+                      })}
+                    >
+                      Edit
+                    </button>
+
+                    <button
+                      className="text-red-600"
+                      onClick={()=>remove(n.id)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <Empty t="No notices found"/>
+        )}
+      </Card>
+
+      {m && (
+        <Modal
+          title={m.id?'Edit Notice':'Create Notice'}
+          onClose={()=>setM(null)}
+        >
+          <Field
+            l="Title"
+            value={m.title}
+            onChange={e=>setM({...m,title:e.target.value})}
+          />
+
+          <Field
+            l="Content"
+            t="textarea"
+            value={m.content}
+            onChange={e=>setM({...m,content:e.target.value})}
+          />
+
+          <Field
+            l="Category"
+            t="select"
+            opts={CATS}
+            value={m.category}
+            onChange={e=>setM({...m,category:e.target.value})}
+          />
+
+          <Field
+            l="Priority"
+            t="select"
+            opts={['Low','Normal','High','Urgent']}
+            value={m.priority}
+            onChange={e=>setM({...m,priority:e.target.value})}
+          />
+
+          <Field
+            l="Status"
+            t="select"
+            opts={['Active','Draft']}
+            value={m.published?'Active':'Draft'}
+            onChange={e=>setM({
+              ...m,
+              published:e.target.value==='Active'
+            })}
+          />
+
+          <div className="flex justify-end gap-2 mt-4">
+            <Btn
+              v="s"
+              onClick={()=>setM(null)}
+            >
+              Cancel
+            </Btn>
+
+            <Btn onClick={save}>
+              Save
+            </Btn>
+          </div>
+        </Modal>
+      )}
+    </div>
+  );
+}
+
+function AdminEvents(){
+  const {toast,authUser}=useContext(Ctx);
+
+  const [items,setItems]=useState([]);
+  const [loading,setLoading]=useState(true);
+  const [m,setM]=useState(null);
+
+  const loadEvents=async()=>{
+    setLoading(true);
+
+    const {data,error}=await supabase
+      .from('events')
+      .select('*')
+      .order('event_date',{ascending:true})
+      .order('start_time',{ascending:true});
+
+    if(error){
+      console.error('ADMIN EVENT LOAD ERROR:',error);
+      toast(error.message,'err');
+      setLoading(false);
+      return;
+    }
+
+    setItems(data||[]);
+    setLoading(false);
+  };
+
+  useEffect(()=>{
+    loadEvents();
+  },[]);
+
+  const blank={
+    title:'',
+    description:'',
+    category:'General',
+    event_date:'',
+    start_time:'',
+    end_time:'',
+    venue:'',
+    organizer:'',
+    registration_url:'',
+    image_url:'',
+    published:true
+  };
+
+  const save=async()=>{
+    if(!m.title.trim() || !m.description.trim() || !m.event_date){
+      toast('Title, description and date are required','err');
+      return;
+    }
+
+    const payload={
+      title:m.title,
+      description:m.description,
+      category:m.category||'General',
+      event_date:m.event_date,
+      start_time:m.start_time||null,
+      end_time:m.end_time||null,
+      venue:m.venue||null,
+      organizer:m.organizer||null,
+      registration_url:m.registration_url||null,
+      image_url:m.image_url||null,
+      published:Boolean(m.published)
+    };
+
+    if(m.id){
+      const {data,error}=await supabase
+        .from('events')
+        .update(payload)
+        .eq('id',m.id)
+        .select()
+        .single();
+
+      if(error){
+        console.error('EVENT UPDATE ERROR:',error);
+        toast(error.message,'err');
+        return;
+      }
+
+      setItems(items.map(x=>x.id===m.id?data:x));
+      toast('Event updated successfully');
+    }else{
+      const {data,error}=await supabase
+        .from('events')
+        .insert({
+          ...payload,
+          created_by:authUser?.id||null
+        })
+        .select()
+        .single();
+
+      if(error){
+        console.error('EVENT CREATE ERROR:',error);
+        toast(error.message,'err');
+        return;
+      }
+
+      setItems([data,...items]);
+      toast('Event created successfully');
+    }
+
+    setM(null);
+  };
+
+  const remove=async(id)=>{
+    if(!confirm('Delete this event?')) return;
+
+    const {error}=await supabase
+      .from('events')
+      .delete()
+      .eq('id',id);
+
+    if(error){
+      console.error('EVENT DELETE ERROR:',error);
+      toast(error.message,'err');
+      return;
+    }
+
+    setItems(items.filter(x=>x.id!==id));
+    toast('Event deleted successfully');
+  };
+
+  const timeValue=t=>t?String(t).slice(0,5):'';
+
+  return (
+    <div>
+      <Head
+        t="Manage Events"
+        s="Create and manage campus events."
+      >
+        <Btn onClick={()=>setM({...blank})}>
+          + Create Event
+        </Btn>
+      </Head>
+
+      <Card c="overflow-x-auto">
+        {loading ? (
+          <div className="p-6 text-center text-slate-500">
+            Loading events...
+          </div>
+        ) : items.length ? (
+          <table className="w-full text-sm">
+            <thead className="bg-slate-50 text-left text-slate-500">
+              <tr>
+                <th className="p-3">Event</th>
+                <th className="p-3">Category</th>
+                <th className="p-3">Date</th>
+                <th className="p-3">Time</th>
+                <th className="p-3">Venue</th>
+                <th className="p-3">Status</th>
+                <th className="p-3">Actions</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {items.map(e=>(
+                <tr
+                  key={e.id}
+                  className="border-t border-slate-100"
+                >
+                  <td className="p-3 font-medium">
+                    {e.title}
+                  </td>
+
+                  <td className="p-3">
+                    {e.category}
+                  </td>
+
+                  <td className="p-3">
+                    {fmt(e.event_date)}
+                  </td>
+
+                  <td className="p-3">
+                    {timeValue(e.start_time)}
+                    {e.end_time ? ` - ${timeValue(e.end_time)}` : ''}
+                  </td>
+
+                  <td className="p-3">
+                    {e.venue || '-'}
+                  </td>
+
+                  <td className="p-3">
+                    <Badge
+                      s={e.published?'Active':'Draft'}
+                    />
+                  </td>
+
+                  <td className="p-3 whitespace-nowrap">
+                    <button
+                      className="text-indigo-600 mr-3"
+                      onClick={()=>setM({
+                        ...e,
+                        start_time:timeValue(e.start_time),
+                        end_time:timeValue(e.end_time),
+                        published:Boolean(e.published)
+                      })}
+                    >
+                      Edit
+                    </button>
+
+                    <button
+                      className="text-red-600"
+                      onClick={()=>remove(e.id)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <Empty t="No events found"/>
+        )}
+      </Card>
+
+      {m && (
+        <Modal
+          title={m.id?'Edit Event':'Create Event'}
+          onClose={()=>setM(null)}
+        >
+          <Field
+            l="Event Name"
+            value={m.title}
+            onChange={e=>setM({
+              ...m,
+              title:e.target.value
+            })}
+          />
+
+          <Field
+            l="Description"
+            t="textarea"
+            value={m.description}
+            onChange={e=>setM({
+              ...m,
+              description:e.target.value
+            })}
+          />
+
+          <Field
+            l="Category"
+            value={m.category}
+            onChange={e=>setM({
+              ...m,
+              category:e.target.value
+            })}
+          />
+
+          <div className="grid sm:grid-cols-2 gap-3">
+            <Field
+              l="Event Date"
+              t="date"
+              value={m.event_date}
+              onChange={e=>setM({
+                ...m,
+                event_date:e.target.value
+              })}
+            />
+
+            <Field
+              l="Start Time"
+              t="time"
+              value={m.start_time}
+              onChange={e=>setM({
+                ...m,
+                start_time:e.target.value
+              })}
+            />
+
+            <Field
+              l="End Time"
+              t="time"
+              value={m.end_time}
+              onChange={e=>setM({
+                ...m,
+                end_time:e.target.value
+              })}
+            />
+
+            <Field
+              l="Venue"
+              value={m.venue}
+              onChange={e=>setM({
+                ...m,
+                venue:e.target.value
+              })}
+            />
+          </div>
+
+          <Field
+            l="Organizer"
+            value={m.organizer}
+            onChange={e=>setM({
+              ...m,
+              organizer:e.target.value
+            })}
+          />
+
+          <Field
+            l="Registration URL"
+            value={m.registration_url}
+            onChange={e=>setM({
+              ...m,
+              registration_url:e.target.value
+            })}
+          />
+
+          <Field
+            l="Image URL"
+            value={m.image_url}
+            onChange={e=>setM({
+              ...m,
+              image_url:e.target.value
+            })}
+          />
+
+          <Field
+            l="Status"
+            t="select"
+            opts={['Active','Draft']}
+            value={m.published?'Active':'Draft'}
+            onChange={e=>setM({
+              ...m,
+              published:e.target.value==='Active'
+            })}
+          />
+
+          <div className="flex justify-end gap-2 mt-4">
+            <Btn
+              v="s"
+              onClick={()=>setM(null)}
+            >
+              Cancel
+            </Btn>
+
+            <Btn onClick={save}>
+              Save
+            </Btn>
+          </div>
+        </Modal>
+      )}
+    </div>
+  );
+}
+
+function AdminPage({seg}){
+  const {S,toast}=useContext(Ctx);
+  const a=seg[1];
+
+  const [m,setM]=useState(null);
+  const [items,setItems]=useState([]);
+  const [loading,setLoading]=useState(true);
+  const [dbStats,setDbStats]=useState({students:0,notices:0,events:0});
+  const [recentNotices,setRecentNotices]=useState([]);
+  const [upcomingEvents,setUpcomingEvents]=useState([]);
+
+  const loadComplaints=async()=>{
+    setLoading(true);
+
+    const {data,error}=await supabase
+      .from('complaints')
+      .select('*')
+      .order('created_at',{ascending:false});
+
+    if(error){
+      console.error('ADMIN COMPLAINT LOAD ERROR:',error);
+      toast(error.message,'err');
+      setLoading(false);
+      return;
+    }
+
+    const mapped=(data||[]).map(c=>({
+      id:c.id,
+      title:c.title,
+      desc:c.description||'',
+      cat:c.category||'Other',
+      location:c.location||'',
+      status:c.status,
+      priority:c.priority,
+      date:c.created_at,
+      student:c.user_id,
+      resp:c.admin_response||''
+    }));
+
+    setItems(mapped);
+    S.setC(mapped);
+    setLoading(false);
+  };
+
+  useEffect(()=>{
+    loadComplaints();
+
+    const loadDashboardData=async()=>{
+      const today=new Date().toISOString().slice(0,10);
+
+      const [studentsRes,noticesRes,eventsRes,recentNoticesRes,upcomingEventsRes]=await Promise.all([
+        supabase.from('profiles').select('id',{count:'exact',head:true}).eq('role','student'),
+        supabase.from('notices').select('id',{count:'exact',head:true}).eq('published',true),
+        supabase.from('events').select('id',{count:'exact',head:true}).eq('published',true).gte('event_date',today),
+        supabase.from('notices').select('id,title,category,priority,created_at').eq('published',true).order('created_at',{ascending:false}).limit(5),
+        supabase.from('events').select('id,title,event_date,start_time,venue,category').eq('published',true).gte('event_date',today).order('event_date',{ascending:true}).order('start_time',{ascending:true}).limit(5)
+      ]);
+
+      const errors=[studentsRes,noticesRes,eventsRes,recentNoticesRes,upcomingEventsRes].filter(r=>r.error);
+      if(errors.length){
+        console.error('ADMIN DASHBOARD DATA ERROR:',errors.map(r=>r.error));
+        toast('Some dashboard data could not be loaded','err');
+      }
+
+      setDbStats({
+        students:studentsRes.count||0,
+        notices:noticesRes.count||0,
+        events:eventsRes.count||0
+      });
+      setRecentNotices(recentNoticesRes.data||[]);
+      setUpcomingEvents(upcomingEventsRes.data||[]);
+    };
+
+    loadDashboardData();
+  },[]);
+
+  const cnt=(status)=>{
+    return items.filter(c=>c.status===status).length;
+  };
+
+  const total=items.length;
+
+  const byS=[
+    ['Submitted',cnt('Submitted'),'bg-indigo-500'],
+    ['Under Review',cnt('Under Review'),'bg-amber-500'],
+    ['In Progress',cnt('In Progress'),'bg-blue-500'],
+    ['Resolved',cnt('Resolved'),'bg-green-500'],
+    ['Rejected',cnt('Rejected'),'bg-red-500']
+  ];
+
+  const byC=[
+    ...new Set(items.map(c=>c.cat))
+  ].map(c=>[
+    c,
+    items.filter(x=>x.cat===c).length
+  ]);
+
+  const rate=total
+    ? Math.round((cnt('Resolved')/total)*100)
+    : 0;
+
+  const updateComplaint=async()=>{
+
+    if(!m) return;
+
+    const {data,error}=await supabase
+      .from('complaints')
+      .update({
+        status:m.status,
+        admin_response:m.resp||null,
+        resolved_at:m.status==='Resolved'
+          ? new Date().toISOString()
+          : null
+      })
+      .eq('id',m.id)
+      .select()
+      .single();
+
+    if(error){
+      console.error('COMPLAINT UPDATE ERROR:',error);
+      toast(error.message,'err');
+      return;
+    }
+
+    const updated={
+      id:data.id,
+      title:data.title,
+      desc:data.description||'',
+      cat:data.category||'Other',
+      location:data.location||'',
+      status:data.status,
+      priority:data.priority,
+      date:data.created_at,
+      student:data.user_id,
+      resp:data.admin_response||''
+    };
+
+    const next=items.map(c=>
+      c.id===updated.id ? updated : c
+    );
+
+    setItems(next);
+    S.setC(next);
+
+    setM(null);
+
+    toast('Complaint updated successfully');
+  };
+
+  const rev=(
+    <Modal
+      title={m && 'Complaint #'+m.id}
+      onClose={()=>setM(null)}
+    >
+      {m && (
+        <>
+          <div className="mb-4">
+            <div className="text-xs text-slate-400 mb-1">
+              Complaint ID
+            </div>
+
+            <div className="font-medium break-all">
+              #{m.id}
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <div className="text-xs text-slate-400 mb-1">
+              Category
+            </div>
+
+            <div className="font-medium">
+              {m.cat}
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <div className="text-xs text-slate-400 mb-1">
+              Description
+            </div>
+
+            <div className="text-sm bg-slate-50 rounded-xl p-3">
+              {m.desc}
+            </div>
+          </div>
+
+          <Field
+            l="Status"
+            t="select"
+            opts={[
+              'Submitted',
+              'Under Review',
+              'In Progress',
+              'Resolved',
+              'Rejected'
+            ]}
+            value={m.status}
+            onChange={e=>
+              setM({
+                ...m,
+                status:e.target.value
+              })
+            }
+          />
+
+          <Field
+            l="Admin Response"
+            t="textarea"
+            value={m.resp||''}
+            onChange={e=>
+              setM({
+                ...m,
+                resp:e.target.value
+              })
+            }
+          />
+
+          <div className="flex justify-end gap-2 mt-4">
+
+            <Btn
+              v="s"
+              onClick={()=>setM(null)}
+            >
+              Cancel
+            </Btn>
+
+            <Btn onClick={updateComplaint}>
+              Update Complaint
+            </Btn>
+
+          </div>
+        </>
+      )}
+    </Modal>
+  );
+
+  const CT=({n})=>(
+    <Card c="overflow-x-auto">
+
+      {loading ? (
+
+        <div className="p-6 text-center text-slate-500">
+          Loading complaints...
+        </div>
+
+      ) : items.length ? (
+
+        <table className="w-full text-sm">
+
+          <thead className="bg-slate-50 text-left text-slate-500">
+            <tr>
+              {[
+                'ID',
+                'Student ID',
+                'Category',
+                'Description',
+                'Date',
+                'Priority',
+                'Status',
+                'Action'
+              ].map(h=>(
+                <th
+                  key={h}
+                  className="p-3"
+                >
+                  {h}
+                </th>
+              ))}
+            </tr>
+          </thead>
+
+          <tbody>
+
+            {items.slice(0,n).map(c=>(
+              <tr
+                key={c.id}
+                className="border-t border-slate-100"
+              >
+
+                <td className="p-3 text-xs">
+                  #{String(c.id).slice(0,8)}
+                </td>
+
+                <td className="p-3 text-xs">
+                  {c.student}
+                </td>
+
+                <td className="p-3">
+                  {c.cat}
+                </td>
+
+                <td className="p-3 max-w-[220px] truncate">
+                  {c.desc}
+                </td>
+
+                <td className="p-3">
+                  {fmt(c.date)}
+                </td>
+
+                <td className="p-3">
+                  <Badge s={c.priority}/>
+                </td>
+
+                <td className="p-3">
+                  <Badge s={c.status}/>
+                </td>
+
+                <td className="p-3">
+                  <button
+                    className="text-indigo-600 font-medium"
+                    onClick={()=>setM({...c})}
+                  >
+                    Review
+                  </button>
+                </td>
+
+              </tr>
+            ))}
+
+          </tbody>
+
+        </table>
+
+      ) : (
+
+        <Empty t="No complaints found"/>
+
+      )}
+
+    </Card>
+  );
+
+  if(a==='dashboard'){
+    return (
+      <div>
+
+        <Head
+          t="Admin Dashboard"
+          s="Live campus overview from Supabase."
+        />
+
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
+
+          <Stat i="🎓" l="Total Students" v={dbStats.students} c="bg-indigo-50" />
+          <Stat i="📢" l="Published Notices" v={dbStats.notices} c="bg-amber-50" />
+          <Stat i="🎉" l="Upcoming Events" v={dbStats.events} c="bg-pink-50" />
+          <Stat i="📝" l="Total Complaints" v={total} c="bg-violet-50" />
+          <Stat i="📤" l="Submitted" v={cnt('Submitted')} c="bg-indigo-50" />
+          <Stat i="🔎" l="Under Review" v={cnt('Under Review')} c="bg-amber-50" />
+          <Stat i="⚙️" l="In Progress" v={cnt('In Progress')} c="bg-blue-50" />
+          <Stat i="✅" l="Resolved" v={cnt('Resolved')} c="bg-green-50" />
+
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-4 mb-5">
+          <Bars t="Complaints by Status" d={byS} />
+          <Bars t="Complaints by Category" d={byC} />
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-4 mb-5">
+
+          <Card>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-semibold">Recent Notices</h3>
+              <button className="text-xs text-indigo-600 font-medium" onClick={()=>nav('/admin/notices')}>View all</button>
+            </div>
+            {recentNotices.length ? recentNotices.map(n=>(
+              <div key={n.id} className="py-3 border-b last:border-0 border-slate-100">
+                <div className="font-medium text-sm">{n.title}</div>
+                <div className="text-xs text-slate-500 mt-1">{n.category||'General'} • {n.priority||'Normal'} • {new Date(n.created_at).toLocaleDateString()}</div>
+              </div>
+            )) : <Empty t="No published notices" />}
+          </Card>
+
+          <Card>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-semibold">Upcoming Events</h3>
+              <button className="text-xs text-indigo-600 font-medium" onClick={()=>nav('/admin/events')}>View all</button>
+            </div>
+            {upcomingEvents.length ? upcomingEvents.map(e=>(
+              <div key={e.id} className="py-3 border-b last:border-0 border-slate-100">
+                <div className="font-medium text-sm">{e.title}</div>
+                <div className="text-xs text-slate-500 mt-1">{e.category||'General'} • {e.event_date}{e.start_time ? ' • '+String(e.start_time).slice(0,5) : ''}{e.venue ? ' • '+e.venue : ''}</div>
+              </div>
+            )) : <Empty t="No upcoming events" />}
+          </Card>
+
+        </div>
+
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="font-semibold">Recent Complaints</h3>
+          <span className="text-xs text-slate-500">Resolution rate: {rate}%</span>
+        </div>
+        <CT n={5}/>
+
+        {m && rev}
+
+      </div>
+    );
+  }
+
+  if(a==='complaints'){
+    return (
+      <div>
+
+        <Head
+          t="Complaint Management"
+          s="Review and update student complaints."
+        />
+
+        <CT n={99}/>
+
+        {m && rev}
+
+      </div>
+    );
+  }
+
+  if(a==='students'){
+    return (
+      <Crud
+        title="Students"
+        noun="Student"
+        items={S.students}
+        setItems={S.setS}
+        cols={[
+          ['Student','name'],
+          ['Student ID','sid'],
+          ['Department','dept'],
+          ['Semester','sem'],
+          ['Email','email'],
+          ['Status','status']
+        ]}
+        fields={[
+          {k:'name',l:'Full Name'},
+          {k:'sid',l:'Student ID'},
+          {k:'email',l:'Email'},
+          {k:'dept',l:'Department'},
+          {
+            k:'sem',
+            l:'Semester',
+            t:'select',
+            opts:['1','2','3','4','5','6','7','8']
+          },
+          {
+            k:'status',
+            l:'Status',
+            t:'select',
+            opts:['Active','Inactive']
+          }
+        ]}
+        filters={[
+          {
+            k:'dept',
+            l:'departments',
+            opts:DEPTS
+          },
+          {
+            k:'sem',
+            l:'semesters',
+            opts:['1','2','3','4','5','6','7','8']
+          }
+        ]}
+      />
+    );
+  }
+
+  if(a==='notices'){
+    return <AdminNotices/>;
+  }
+
+  if(a==='events'){
+    return <AdminEvents/>;
+  }
+
+  if(a==='faqs'){
+    return <AdminFAQs/>;
+  }
+
+  if(a==='analytics'){
+    const activeComplaints=cnt('Submitted')+cnt('Under Review')+cnt('In Progress');
+    const resolved=cnt('Resolved');
+    const rejected=cnt('Rejected');
+
+    const priorityData=[
+      ['Low',items.filter(c=>c.priority==='Low').length,'bg-slate-400'],
+      ['Normal',items.filter(c=>c.priority==='Normal').length,'bg-indigo-500'],
+      ['High',items.filter(c=>c.priority==='High').length,'bg-amber-500'],
+      ['Urgent',items.filter(c=>c.priority==='Urgent').length,'bg-red-500']
+    ];
+
+    const categoryData=byC.length?byC:[['No complaints yet',0,'bg-slate-300']];
+
+    return (
+      <div>
+        <Head t="Analytics & Reports" s="Live campus analytics generated from Supabase data."/>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
+          <Stat i="🎓" l="Total Students" v={dbStats.students} c="bg-indigo-50"/>
+          <Stat i="📢" l="Published Notices" v={dbStats.notices} c="bg-amber-50"/>
+          <Stat i="🎉" l="Upcoming Events" v={dbStats.events} c="bg-pink-50"/>
+          <Stat i="📝" l="Total Complaints" v={total} c="bg-violet-50"/>
+          <Stat i="⏳" l="Active Complaints" v={activeComplaints} c="bg-blue-50"/>
+          <Stat i="🔎" l="Under Review" v={cnt('Under Review')} c="bg-yellow-50"/>
+          <Stat i="⚙️" l="In Progress" v={cnt('In Progress')} c="bg-sky-50"/>
+          <Stat i="✅" l="Resolved" v={resolved} c="bg-green-50"/>
+        </div>
+
+        <div className="grid lg:grid-cols-3 gap-4 mb-5">
+          <Card c="p-5 lg:col-span-2">
+            <div className="flex items-center justify-between mb-4">
+              <div><h3 className="font-semibold">Complaint Resolution</h3><p className="text-xs text-slate-500 mt-1">Resolved complaints compared with all complaints.</p></div>
+              <div className="text-3xl font-bold text-indigo-600">{rate}%</div>
+            </div>
+            <div className="h-4 bg-slate-100 rounded-full overflow-hidden"><div className="h-full bg-green-500 rounded-full" style={{width:rate+'%'}}></div></div>
+            <div className="grid grid-cols-3 gap-3 mt-4 text-sm">
+              <div className="bg-slate-50 rounded-xl p-3"><div className="text-xs text-slate-500">Total</div><b>{total}</b></div>
+              <div className="bg-green-50 rounded-xl p-3"><div className="text-xs text-slate-500">Resolved</div><b>{resolved}</b></div>
+              <div className="bg-red-50 rounded-xl p-3"><div className="text-xs text-slate-500">Rejected</div><b>{rejected}</b></div>
+            </div>
+          </Card>
+          <Card c="p-5">
+            <h3 className="font-semibold">Campus Overview</h3>
+            <div className="space-y-4 mt-4 text-sm">
+              <div className="flex justify-between"><span className="text-slate-500">Students</span><b>{dbStats.students}</b></div>
+              <div className="flex justify-between"><span className="text-slate-500">Published notices</span><b>{dbStats.notices}</b></div>
+              <div className="flex justify-between"><span className="text-slate-500">Upcoming events</span><b>{dbStats.events}</b></div>
+              <div className="flex justify-between"><span className="text-slate-500">Active complaints</span><b>{activeComplaints}</b></div>
+              <div className="pt-3 border-t border-slate-100 text-xs text-slate-400">Data is loaded live from Supabase.</div>
+            </div>
+          </Card>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-4 mb-5">
+          <Bars t="Complaint Status Distribution" d={byS}/>
+          <Bars t="Complaint Category Distribution" d={categoryData}/>
+          <Bars t="Complaint Priority Distribution" d={priorityData}/>
+          <Card c="p-5">
+            <h3 className="font-semibold mb-4">Key Metrics</h3>
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between border-b border-slate-100 pb-3"><span>Resolution rate</span><b>{rate}%</b></div>
+              <div className="flex justify-between border-b border-slate-100 pb-3"><span>Active complaint share</span><b>{total?Math.round(activeComplaints/total*100):0}%</b></div>
+              <div className="flex justify-between border-b border-slate-100 pb-3"><span>Resolved complaints</span><b>{resolved}</b></div>
+              <div className="flex justify-between"><span>Rejected complaints</span><b>{rejected}</b></div>
+            </div>
+          </Card>
+        </div>
+
+        <Card c="p-5">
+          <div className="flex items-center justify-between mb-4">
+            <div><h3 className="font-semibold">Report Summary</h3><p className="text-sm text-slate-500 mt-1">Current snapshot for the CampusAI administration panel.</p></div>
+            <span className="text-xs px-3 py-1 rounded-full bg-green-50 text-green-700">Live Data</span>
+          </div>
+          <div className="grid sm:grid-cols-3 gap-3">
+            <div className="rounded-xl bg-slate-50 p-4"><div className="text-xs text-slate-500">Content</div><div className="font-semibold mt-1">{dbStats.notices} notices · {dbStats.events} upcoming events</div></div>
+            <div className="rounded-xl bg-slate-50 p-4"><div className="text-xs text-slate-500">Complaints</div><div className="font-semibold mt-1">{activeComplaints} active · {resolved} resolved</div></div>
+            <div className="rounded-xl bg-slate-50 p-4"><div className="text-xs text-slate-500">Students</div><div className="font-semibold mt-1">{dbStats.students} registered student profiles</div></div>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  return <Empty t="Page not found"/>;
+}
+
+function App(){
+  const [h,setH]=useState(location.hash);
+  const [authUser,setAuthUser]=useState(null);
+  const [profile,setProfile]=useState(null);
+  const [authLoading,setAuthLoading]=useState(true);
+
+  useEffect(()=>{
+    const f=()=>{setH(location.hash);scrollTo(0,0)};
+    addEventListener('hashchange',f);
+
+    let mounted=true;
+
+    const loadSession=async()=>{
+      const {data:{session}}=await supabase.auth.getSession();
+      if(!mounted)return;
+
+      setAuthUser(session?.user||null);
+
+      if(session?.user){
+        const {data:p}=await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id',session.user.id)
+          .single();
+        if(mounted)setProfile(p||null);
+      }
+
+      if(mounted)setAuthLoading(false);
+    };
+
+    loadSession();
+
+    const {data:{subscription}}=supabase.auth.onAuthStateChange(async(_event,session)=>{
+      setAuthUser(session?.user||null);
+
+      if(session?.user){
+        const {data:p}=await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id',session.user.id)
+          .single();
+        if(mounted)setProfile(p||null);
+      }else{
+        setProfile(null);
+      }
+    });
+
+    return()=>{
+      mounted=false;
+      removeEventListener('hashchange',f);
+      subscription.unsubscribe();
+    };
+  },[]);
+
+  const [notices,setN]=useState(D.notices),[events,setE]=useState(D.events),
+    [complaints,setC]=useState(D.complaints),[faqs,setF]=useState(D.faqs),
+    [students,setS]=useState(D.students);
+
+    useEffect(() => {
+  const loadEvents = async () => {
+    const { data, error } = await supabase
+      .from('events')
+      .select('*')
+      .eq('published', true)
+      .order('event_date', { ascending: true })
+      .order('start_time', { ascending: true });
+
+    if (error) {
+      console.error('EVENT LOAD ERROR:', error);
+      return;
+    }
+
+    const mapped = (data || []).map(e => ({
+      id: e.id,
+      title: e.title,
+      desc: e.description || '',
+      date: e.event_date,
+      time: e.start_time
+        ? String(e.start_time).slice(0, 5)
+        : '',
+      endTime: e.end_time
+        ? String(e.end_time).slice(0, 5)
+        : '',
+      loc: e.venue || '',
+      org: e.organizer || '',
+      category: e.category || 'General',
+      registration_url: e.registration_url || '',
+      image_url: e.image_url || '',
+      published: e.published
+    }));
+
+    setE(mapped);
+  };
+
+  if (authUser) {
+    loadEvents();
+  }
+}, [authUser]);
+
+      useEffect(() => {
+    const loadNotices = async () => {
+      const { data, error } = await supabase
+        .from('notices')
+        .select('*')
+        .eq('published', true)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('NOTICE LOAD ERROR:', error);
+        return;
+      }
+
+      const mapped = (data || []).map(n => ({
+        id: n.id,
+        title: n.title,
+        desc: n.content || '',
+        body: n.content || '',
+        cat: n.category || 'General',
+        priority: n.priority || 'Normal',
+        date: n.created_at,
+        status: n.published ? 'Active' : 'Inactive'
+      }));
+
+      setN(mapped);
+    };
+
+    if (authUser) {
+      loadNotices();
+    }
+  }, [authUser]);
+
+  useEffect(() => {
+    const loadFaqs = async () => {
+      const { data, error } = await supabase
+        .from('faqs')
+        .select('id,question,answer,category,keywords,published,created_by,created_at,updated_at')
+        .eq('published', true)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('FAQ LOAD ERROR:', error);
+        return;
+      }
+
+      const mapped = (data || []).map(f => ({
+        id: f.id,
+        q: f.question || '',
+        a: f.answer || '',
+        cat: f.category || 'General',
+        keywords: Array.isArray(f.keywords) ? f.keywords.join(', ') : (f.keywords || ''),
+        published: f.published !== false,
+        created_by: f.created_by || null,
+        created_at: f.created_at,
+        updated_at: f.updated_at
+      }));
+
+      setF(mapped);
+    };
+
+    if (authUser) {
+      loadFaqs();
+    }
+  }, [authUser]);
+
+  const me=profile?{
+    name:profile.full_name||profile.email||'Student',
+    id:profile.student_id||'',
+    email:profile.email||authUser?.email||'',
+    dept:profile.department||DEPTS[0],
+    sem:String(profile.semester||1),
+    role:profile.role||'student'
+  }:{
+    name:'Student',id:'',email:authUser?.email||'',dept:DEPTS[0],sem:'1',role:'student'
+  };
+
+  const [t,setT]=useState(null);
+  const toast=(m,k)=>{setT({m,k});setTimeout(()=>setT(null),2400)};
+
+  const logout=async()=>{
+    await supabase.auth.signOut();
+    nav('/login');
+    toast('Logged out successfully');
+  };
+
+  const S={notices,setN,events,setE,complaints,setC,faqs,setF,students,setS,tt:D.tt};
+
+  const p=h.slice(1)||'/';
+  const seg=p.split('/').filter(Boolean);
+
+  if(authLoading){
+    return <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <div className="text-3xl mb-2">✦</div>
+        <div className="font-semibold">Loading CampusAI...</div>
+      </div>
+    </div>;
+  }
+
+  let v;
+
+  if(p==='/')v=<Landing/>;
+  else if(p==='/login')v=<Auth/>;
+  else if(p==='/signup')v=<Auth signup/>;
+  else if(seg[0]==='student'){
+    if(!authUser)return <Ctx.Provider value={{S,me,setMe:()=>{},toast}}><Auth/></Ctx.Provider>;
+    if(profile?.role==='admin' && !p.startsWith('/student'))return null;
+    v=<Shell role="student" path={p}><StudentPage seg={seg}/></Shell>;
+  }
+  else if(seg[0]==='admin'){
+    if(!authUser)return <Ctx.Provider value={{S,me,setMe:()=>{},toast}}><Auth/></Ctx.Provider>;
+    if(profile?.role!=='admin'){
+      v=<div className="min-h-screen flex flex-col items-center justify-center gap-3">
+        <h1 className="text-3xl font-bold">Access Denied</h1>
+        <p className="text-slate-500">Admin access is required.</p>
+        <Btn onClick={()=>nav('/student/dashboard')}>Go to Student Dashboard</Btn>
+      </div>;
+    }else{
+      v=<Shell role="admin" path={p}><AdminPage seg={seg}/></Shell>;
+    }
+  }
+  else v=<div className="min-h-screen flex flex-col items-center justify-center gap-3"><h1 className="text-3xl font-bold">404 – Page not found</h1><Btn onClick={()=>nav('/')}>Go home</Btn></div>;
+
+  return <Ctx.Provider value={{S,me,setMe:setProfile,toast,authUser,profile,logout}}>{v}{t&&<div className={'fixed bottom-5 left-1/2 -translate-x-1/2 z-[60] px-5 py-3 rounded-xl text-white text-sm shadow-lg '+(t.k==='err'?'bg-red-600':'bg-slate-900')}>{t.m}</div>}</Ctx.Provider>
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script id="fx-script">(function(){
+var d=document,b=d.body,rm=matchMedia('(prefers-reduced-motion: reduce)').matches;
+var coarse=matchMedia('(pointer: coarse)').matches,small=innerWidth<768;
+var lowPower=(navigator.hardwareConcurrency&&navigator.hardwareConcurrency<=4)||(navigator.deviceMemory&&navigator.deviceMemory<=2)||(navigator.connection&&navigator.connection.saveData);
+var lite=rm||lowPower||small; if(lite)b.classList.add('fx-lite');
+/* 2D base layer (always present = fallback) */
+var bg=d.createElement('div');bg.id='fx-bg';bg.setAttribute('aria-hidden','true');bg.innerHTML='<i class="fx-blob a"></i><i class="fx-blob b"></i>';b.insertBefore(bg,b.firstChild);
+/* mouse parallax + card tilt (rAF throttled) */
+var mx=0,my=0,tick=false,tcard=null,ex=0,ey=0;
+function frame(){tick=false;var r=d.documentElement.style;r.setProperty('--px',(mx/innerWidth*2-1).toFixed(3));r.setProperty('--py',(my/innerHeight*2-1).toFixed(3));
+ if(tcard){var q=tcard.getBoundingClientRect(),x=(ex-q.left)/q.width,y=(ey-q.top)/q.height;
+    tcard.style.setProperty('--ry',((x-.5)*10).toFixed(2)+'deg');tcard.style.setProperty('--rx',((.5-y)*8).toFixed(2)+'deg');}}
+function reset(c){c.classList.remove('tilting');c.style.removeProperty('--rx');c.style.removeProperty('--ry')}
+if(!rm&&!coarse){
+ d.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;ex=e.clientX;ey=e.clientY;
+  var c=e.target.closest&&e.target.closest('.fx-card');
+  if(c!==tcard){if(tcard)reset(tcard);tcard=null;
+   if(c&&!lite){var q=c.getBoundingClientRect();
+    if(q.width<560&&q.height<340&&!c.querySelector('input,select,textarea,table')){tcard=c;c.classList.add('tilting')}}}
+  if(c)c.style.setProperty('--mx',((e.clientX-c.getBoundingClientRect().left))+'px'),c.style.setProperty('--my',((e.clientY-c.getBoundingClientRect().top))+'px');
+  if(!tick){tick=true;requestAnimationFrame(frame)}},{passive:true});
+ d.addEventListener('mouseleave',function(){if(tcard){reset(tcard);tcard=null}});
+}
+/* Three.js network background (lazy, optional) */
+function webgl(){try{var c=d.createElement('canvas');return !!(window.WebGLRenderingContext&&(c.getContext('webgl')||c.getContext('experimental-webgl')))}catch(e){return false}}
+function start(){
+ if(!window.THREE||lite||!webgl())return;
+ var T=THREE,cv=d.createElement('canvas');cv.id='fx-canvas';cv.setAttribute('aria-hidden','true');b.insertBefore(cv,bg.nextSibling);
+ var R;try{R=new T.WebGLRenderer({canvas:cv,alpha:true,antialias:false,powerPreference:'low-power'})}catch(e){cv.remove();return}
+ R.setPixelRatio(Math.min(devicePixelRatio||1,1.5));
+ var S=new T.Scene(),C=new T.PerspectiveCamera(60,1,.1,100);C.position.z=22;
+ var N=70,P=new Float32Array(N*3),V=[],i;
+ for(i=0;i<N;i++){P[i*3]=(Math.random()-.5)*44;P[i*3+1]=(Math.random()-.5)*26;P[i*3+2]=(Math.random()-.5)*20;V.push([(Math.random()-.5)*.012,(Math.random()-.5)*.012,(Math.random()-.5)*.008])}
+ var pg=new T.BufferGeometry();pg.setAttribute('position',new T.BufferAttribute(P,3));
+ var pts=new T.Points(pg,new T.PointsMaterial({color:0xa5b4fc,size:.16,transparent:true,opacity:.85,depthWrite:false}));
+ var MAXL=N*6,L=new Float32Array(MAXL*6),lg=new T.BufferGeometry();lg.setAttribute('position',new T.BufferAttribute(L,3));
+ var lines=new T.LineSegments(lg,new T.LineBasicMaterial({color:0x818cf8,transparent:true,opacity:.28,depthWrite:false}));
+ var G=new T.Group();G.add(pts,lines);
+ var ico=new T.Mesh(new T.IcosahedronGeometry(3.2,1),new T.MeshBasicMaterial({color:0x7c3aed,wireframe:true,transparent:true,opacity:.18}));ico.position.set(11,3,-6);G.add(ico);
+ var tor=new T.Mesh(new T.TorusGeometry(2.4,.04,8,48),new T.MeshBasicMaterial({color:0x38bdf8,transparent:true,opacity:.3}));tor.position.set(-12,-4,-4);G.add(tor);
+ S.add(G);
+ function size(){var w=innerWidth,h=innerHeight;R.setSize(w,h,false);C.aspect=w/h;C.updateProjectionMatrix()}size();addEventListener('resize',size);
+ var run=true;d.addEventListener('visibilitychange',function(){run=!d.hidden;if(run)loop()});
+ R.domElement.addEventListener('webglcontextlost',function(e){e.preventDefault();run=false;cv.remove()});
+ var px=0,py=0,t=0;
+ function loop(){if(!run)return;requestAnimationFrame(loop);t+=.005;
+  for(i=0;i<N;i++){var k=i*3;P[k]+=V[i][0];P[k+1]+=V[i][1];P[k+2]+=V[i][2];
+   if(Math.abs(P[k])>22)V[i][0]*=-1;if(Math.abs(P[k+1])>13)V[i][1]*=-1;if(Math.abs(P[k+2])>10)V[i][2]*=-1}
+  pg.attributes.position.needsUpdate=true;
+  var n=0,a,c2;for(a=0;a<N&&n<MAXL;a++)for(c2=a+1;c2<N&&n<MAXL;c2++){
+   var dx=P[a*3]-P[c2*3],dy=P[a*3+1]-P[c2*3+1],dz=P[a*3+2]-P[c2*3+2];
+   if(dx*dx+dy*dy+dz*dz<30){L.set([P[a*3],P[a*3+1],P[a*3+2],P[c2*3],P[c2*3+1],P[c2*3+2]],n*6);n++}}
+  lg.setDrawRange(0,n*2);lg.attributes.position.needsUpdate=true;
+  var tx=parseFloat(getComputedStyle(d.documentElement).getPropertyValue('--px'))||0,ty=parseFloat(getComputedStyle(d.documentElement).getPropertyValue('--py'))||0;
+  px+=(tx-px)*.04;py+=(ty-py)*.04;G.rotation.y=px*.12+t*.15;G.rotation.x=py*.06;ico.rotation.x+=.003;ico.rotation.y+=.004;tor.rotation.x+=.004;tor.rotation.y+=.002;
+  R.render(S,C)}
+ loop();
+}
+if(!lite&&webgl()){var s=d.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';s.async=true;s.onload=function(){(window.requestIdleCallback||setTimeout)(start)};s.onerror=function(){};d.head.appendChild(s)}
+})();
+</script></body></html>
